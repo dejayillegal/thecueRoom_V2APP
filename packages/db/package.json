@@ -1,0 +1,10 @@
+{
+  "name": "@thecueroom/db",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "drizzle-orm": "0.29.4",
+    "pg": "8.11.1"
+  }
+}
