@@ -1,0 +1,7 @@
+{
+  "name": "@thecueroom/ui",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {}
+}

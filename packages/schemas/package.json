@@ -1,0 +1,9 @@
+{
+  "name": "@thecueroom/schemas",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "zod": "3.22.4"
+  }
+}
