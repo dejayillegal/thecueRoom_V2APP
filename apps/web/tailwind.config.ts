@@ -8,6 +8,7 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         surface: 'var(--surface)',
+        foreground: 'var(--foreground)',
         lime: 'var(--lime)',
         purple: 'var(--purple)'
       },
