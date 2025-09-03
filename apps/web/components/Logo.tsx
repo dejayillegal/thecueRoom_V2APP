@@ -1,4 +1,6 @@
-export default function Logo(props: React.HTMLAttributes<HTMLDivElement>) {
+import type { HTMLAttributes } from 'react';
+
+export default function Logo(props: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       {...props}

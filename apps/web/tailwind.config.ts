@@ -1,22 +1,22 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
+  darkMode: 'class',
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        background: '#0B0B0B',
-        surface: '#111111',
-        lime: '#D1FF3D',
-        purple: '#873BBF'
+        background: 'var(--background)',
+        surface: 'var(--surface)',
+        lime: 'var(--lime)',
+        purple: 'var(--purple)'
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['Source Code Pro', 'monospace']
+        sans: ['var(--font-sans)', 'sans-serif'],
+        mono: ['var(--font-mono)', 'monospace']
       }
     }
-  },
-  darkMode: 'class'
+  }
 };
 
 export default config;
