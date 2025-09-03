@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: dark;
+  --background: #0B0B0B;
+  --surface: #111111;
+  --lime: #D1FF3D;
+  --purple: #873BBF;
+}
+
 body {
-  @apply bg-background text-white;
+  @apply bg-background text-lime;
 }

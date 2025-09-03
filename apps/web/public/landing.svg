@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="TheCueRoom landing illustration">
+  <rect width="400" height="300" fill="#111111"/>
+  <circle cx="200" cy="120" r="80" fill="#D1FF3D"/>
+  <text x="200" y="260" font-size="32" text-anchor="middle" fill="#873BBF" font-family="Inter">TheCueRoom</text>
+</svg>
