@@ -1,27 +1,39 @@
 name: CI
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
+
 jobs:
   web:
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/web } }
+    defaults:
+      run:
+        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: 'npm' }
-      - run: npm i
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - run: npm test --if-present
   mobile:
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/mobile } }
+    defaults:
+      run:
+        working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: 'npm' }
-      - run: node scripts/expo-dep-guard.mjs --ci || true
-      - run: npm i
-      - run: npm run test --if-present
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
       - run: npm run lint
+      - run: npm run build
+      - run: npm run align
+      - run: npm test --if-present
