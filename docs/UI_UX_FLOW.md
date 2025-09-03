@@ -1,5 +1,20 @@
 # UI/UX Flow
 
-1. Users land on the home page and can sign up.
-2. After authentication they access the feed.
-3. Meme studio and playlists are available from navigation.
+## User Journeys
+1. **Onboarding**
+   - Splash → Sign In/Sign Up → Verify → Home Feed.
+2. **Create Cue**
+   - Home Feed → New Cue → Compose → Publish → Home Feed.
+3. **Engage**
+   - Home Feed → Cue Detail → React/Comment → Back.
+
+## Screen Map
+- Splash
+- Auth
+  - Sign In
+  - Sign Up
+- Home Feed
+- Cue Detail
+- New Cue
+- Profile
+- Settings
