@@ -3,6 +3,7 @@
 ## Local Setup
 ```bash
 chmod +x scripts/*.sh
+
 ./scripts/local-setup.sh
 ./scripts/dev.sh
 ```

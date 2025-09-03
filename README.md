@@ -34,6 +34,7 @@ A social playground for cues, built with a Vite/React web app, Expo mobile app, 
 
 ## Task Checklist
 - [ ] Make scripts executable (`chmod +x scripts/*.sh`)
+
 - [ ] Install dependencies (`./scripts/local-setup.sh`)
 - [ ] Run development servers (`./scripts/dev.sh`)
 - [ ] Review requirements and design docs
