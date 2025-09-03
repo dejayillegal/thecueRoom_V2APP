@@ -3,13 +3,21 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
-  --background: #0B0B0B;
-  --surface: #111111;
+  --background: #ffffff;
+  --surface: #f5f5f5;
+  --foreground: #000000;
   --lime: #D1FF3D;
   --purple: #873BBF;
 }
 
-body {
-  @apply bg-background text-lime;
+.dark {
+  --background: #0B0B0B;
+  --surface: #111111;
+  --foreground: #D1FF3D;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
 }
