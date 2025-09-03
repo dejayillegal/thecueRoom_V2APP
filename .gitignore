@@ -24,6 +24,8 @@ out/
 .expo/
 .expo-shared/
 expo-build/
+android/
+ios/
 
 # Caches
 .cache/
