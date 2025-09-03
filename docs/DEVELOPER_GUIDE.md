@@ -1,15 +1,30 @@
 # Developer Guide
 
-## Setup
-
+## Local Setup
 ```bash
-npm install --prefix apps/web
-npm install --prefix apps/mobile
+./scripts/local-setup.sh
+./scripts/dev.sh
 ```
 
-Run tests:
-
+## Code Style
+- Use **Inter** for UI and **Source Code Pro** for code snippets.
+- Run ESLint and Prettier before committing.
 ```bash
-npm run lint:web
-npm run test:mobile
+npm run lint --prefix apps/web
+npm run lint --prefix apps/mobile
 ```
+
+## Testing
+```bash
+npm test --prefix apps/web
+npm test --prefix apps/mobile
+```
+
+## Hermes & Metro Troubleshooting
+- Clear caches when the React Native bundler misbehaves:
+```bash
+watchman watch-del-all
+rm -rf $TMPDIR/metro*
+npm start --prefix apps/mobile -- --reset-cache
+```
+- Ensure `node --version` returns v20.
