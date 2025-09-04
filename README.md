@@ -57,6 +57,8 @@ npx expo start -c
 - [Upgrade V1 to V2](docs/UPGRADE_V1_TO_V2.md)
 
 ## Task Checklist
+- [ ] Make scripts executable (`chmod +x scripts/*.sh`)
+
 - [ ] Install dependencies (`./scripts/local-setup.sh`)
 - [ ] Run development servers (`./scripts/dev.sh`)
 - [ ] Review requirements and design docs
