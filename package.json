@@ -7,7 +7,12 @@
     "build:web": "npm run build --prefix apps/web",
     "lint:mobile": "npm run lint --prefix apps/mobile",
     "test:mobile": "npm run test --prefix apps/mobile",
+    "lint:schemas": "npx -y -p typescript@5.4.5 tsc -p packages/schemas/tsconfig.json",
+    "lint:db": "npm install --prefix packages/db --no-audit --no-fund && npx -y -p typescript@5.4.5 tsc -p packages/db/tsconfig.json",
+    "lint:ui": "npx -y -p typescript@5.4.5 tsc -p packages/ui/tsconfig.json",
+    "lint:functions": "npx -y -p typescript@5.4.5 tsc -p functions/tsconfig.json",
+    "lint:packages": "npm run lint:schemas && npm run lint:db && npm run lint:ui && npm run lint:functions",
     "test": "npm run test:mobile",
-    "ci": "npm run lint:web && npm run build:web && npm run test:mobile && npm run lint:mobile"
+    "ci": "npm run lint:packages && npm run lint:web && npm run build:web && npm run test:mobile && npm run lint:mobile"
   }
 }

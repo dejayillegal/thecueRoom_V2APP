@@ -18,7 +18,9 @@
     "react-dom": "18.2.0",
     "@supabase/supabase-js": "2.57.0",
     "localforage": "1.10.0",
-    "maplibre-gl": "5.7.0"
+    "maplibre-gl": "5.7.0",
+    "@thecueroom/ui": "file:../../packages/ui",
+    "@thecueroom/schemas": "file:../../packages/schemas"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "6.4.5",

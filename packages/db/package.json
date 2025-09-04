@@ -2,9 +2,15 @@
   "name": "@thecueroom/db",
   "private": true,
   "type": "module",
-  "main": "index.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "dependencies": {
     "drizzle-orm": "0.29.4",
     "pg": "8.11.1"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.20.14",
+    "typescript": "5.4.5",
+    "@types/pg": "8.10.2"
   }
 }
