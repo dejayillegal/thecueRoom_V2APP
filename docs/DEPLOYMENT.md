@@ -31,3 +31,10 @@ eas submit --profile production --platform ios
 eas submit --profile production --platform android
 cd ../..
 ```
+
+## Apply database migrations
+```bash
+# from repo root
+DRIZZLE_DATABASE_URL="postgres://user:pass@host:5432/db" npx drizzle-kit push:pg --config=packages/db/drizzle.config.ts
+psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
+```
