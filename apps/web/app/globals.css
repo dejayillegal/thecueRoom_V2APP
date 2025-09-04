@@ -13,11 +13,11 @@
 .dark {
   --background: #0B0B0B;
   --surface: #111111;
-  --foreground: #D1FF3D;
+  --foreground: #ffffff;
 }
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-white;
   }
 }

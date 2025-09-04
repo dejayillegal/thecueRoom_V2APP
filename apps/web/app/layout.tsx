@@ -8,7 +8,7 @@ const mono = Source_Code_Pro({ subsets: ['latin'], variable: '--font-mono' });
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${mono.variable} bg-background text-foreground`}>{children}</body>
+      <body className={`${inter.variable} ${mono.variable}`}>{children}</body>
     </html>
   );
 }
