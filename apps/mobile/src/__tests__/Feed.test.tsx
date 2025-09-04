@@ -1,3 +1,4 @@
+import { render, waitFor, cleanup } from '@testing-library/react-native';
 import { render, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Feed from '../screens/Feed';
@@ -10,6 +11,18 @@ const mockOrder = jest.fn(() => ({ range: mockRange }));
 const mockSelect = jest.fn(() => ({ order: mockOrder }));
 const supabaseMock = supabase as unknown as { from: jest.Mock };
 supabaseMock.from = jest.fn(() => ({ select: mockSelect }));
+
+describe('Feed', () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient();
+  });
+
+  afterEach(() => {
+    queryClient.clear();
+    cleanup();
+  });
 
 const queryClient = new QueryClient();
 
