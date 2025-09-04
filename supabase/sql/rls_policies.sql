@@ -31,7 +31,8 @@ create policy "Update own profile" on profiles for update
   using (auth.uid() = user_id)
   with check (
     auth.uid() = user_id and
-    role = (select role from profiles where user_id = auth.uid())
+    role = (select role from profiles where user_id = auth.uid()) and
+    verification = (select verification from profiles where user_id = auth.uid())
   );
 create policy "Admins manage profiles" on profiles for update
   using (auth.jwt() ->> 'role' = 'admin' or is_admin)
