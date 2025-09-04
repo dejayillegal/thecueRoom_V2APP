@@ -21,7 +21,7 @@ function checkContains(file, needles) {
   }
 }
 console.log('\n[guard] Expo dependency alignment — start');
-run('npx', ['expo', 'doctor']);
+run('npx', ['--yes', 'expo-doctor']);
 run('npx', ['expo', 'install', '--fix']);
 run('npx', ['expo', 'install', 'react-native-screens', 'react-native-safe-area-context']);
 checkContains('babel.config.js', ['babel-preset-expo','react-native-reanimated/plugin']);

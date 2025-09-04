@@ -22,6 +22,21 @@ A social playground for cues, built with a Vite/React web app, Expo mobile app, 
         Supabase DB
 ```
 
+## Mobile
+
+```bash
+cd apps/mobile
+npm i
+npm run align
+npx expo start -c
+```
+
+### Acceptance
+
+- `npm run align` passes locally.
+- `npm test` runs jest-expo without “Object.defineProperty called on non-object”.
+- Metro throws if Node builtins are imported.
+
 ## Documentation
 - [Docs Overview](docs/README.md)
 - [Requirements](docs/REQUIREMENTS.md)
