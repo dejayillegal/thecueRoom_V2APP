@@ -19,4 +19,7 @@ export async function getLatestNews(topic: string): Promise<NewsItem[]> {
     summary: hit.story_text ?? '',
     publishedAt: hit.created_at ? new Date(hit.created_at) : new Date(),
   }));
+export async function newsCurator() {
+  // TODO: replace with real implementation
+  return [] as const;
 }
