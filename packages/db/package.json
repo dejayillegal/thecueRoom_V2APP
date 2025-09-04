@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "drizzle-kit": "0.20.14",
+    "typescript": "5.4.5",
+    "@types/pg": "8.10.2"
     "typescript": "5.4.5"
   }
 }

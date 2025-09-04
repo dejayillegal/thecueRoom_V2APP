@@ -1,0 +1,16 @@
+{
+  "name": "@thecueroom/functions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@thecueroom/db": "file:../packages/db",
+    "@thecueroom/schemas": "file:../packages/schemas",
+    "@thecueroom/ui": "file:../packages/ui"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5"
+  }
+}
