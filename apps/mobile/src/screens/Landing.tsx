@@ -1,6 +1,9 @@
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { theme } from '../theme';
 import type { ComponentType } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 let MarketingLanding: ComponentType<Record<string, unknown>> | null = null;
 try {
@@ -11,6 +14,7 @@ try {
 }
 
 export default function Landing() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background }}>
       {MarketingLanding ? (
@@ -18,6 +22,7 @@ export default function Landing() {
       ) : (
         <Text style={{ color: theme.colors.text }}>Landing</Text>
       )}
+      <Button title="Enter" onPress={() => navigation.navigate('Feed')} />
     </View>
   );
 }
