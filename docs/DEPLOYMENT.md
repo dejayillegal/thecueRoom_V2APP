@@ -38,3 +38,10 @@ cd ../..
 DRIZZLE_DATABASE_URL="postgres://user:pass@host:5432/db" npx drizzle-kit push:pg --config=packages/db/drizzle.config.ts
 psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
 ```
+
+## Database migrations with Drizzle
+Apply schema changes and row-level security policies:
+```bash
+DRIZZLE_DATABASE_URL="postgres://user:pass@host:5432/db" npx drizzle-kit push:pg --config=packages/db/drizzle.config.ts
+psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
+```
