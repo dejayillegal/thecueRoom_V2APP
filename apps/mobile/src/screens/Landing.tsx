@@ -2,14 +2,9 @@ import { View, Text } from 'react-native';
 import { theme } from '../theme';
 import type { ComponentType } from 'react';
 
-
 let MarketingLanding: ComponentType<Record<string, unknown>> | null = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-
-let MarketingLanding: ComponentType<any> | null = null;
-try {
-
   MarketingLanding = require('../../../../MarketingLanding.svg').default;
 } catch {
   MarketingLanding = null;
