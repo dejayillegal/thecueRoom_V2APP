@@ -34,11 +34,14 @@ const columns = [
 export default function Footer() {
   return (
     <footer className="bg-background" aria-labelledby="footer-heading">
+      <h2 id="footer-heading" className="sr-only">
+        Footer
+      </h2>
       <div className="mx-auto flex max-w-[1200px] flex-col items-start justify-between gap-8 px-6 py-12 md:flex-row">
         <p className="text-xs text-muted">
           © TheCueRoom {new Date().getFullYear()} – All rights reserved.
         </p>
-        <nav aria-labelledby="footer-heading" className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4">
+        <nav className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4">
           {columns.map((col) => (
             <div key={col.title}>
               <h3 className="text-sm font-semibold">{col.title}</h3>
@@ -47,7 +50,7 @@ export default function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted hover:text-lime hover:underline focus-visible:text-lime focus-visible:underline"
+                      className="text-sm text-muted hover:text-lime hover:underline focus-visible:text-lime focus-visible:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime"
                     >
                       {link.label}
                     </Link>
