@@ -7,7 +7,7 @@ const lines = [
 export default function FeedPreview() {
   return (
     <section
-      className="rounded-md bg-surface p-6 border border-white/10"
+      className="rounded-md bg-surface p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
       aria-labelledby="feed-preview-heading"
     >
       <h2 id="feed-preview-heading" className="mb-4 text-base font-semibold">
