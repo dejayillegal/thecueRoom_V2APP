@@ -7,8 +7,8 @@ export function moderateContent(content: string): { allowed: boolean; reason?: s
     return { allowed: false, reason: `contains ${hit}` };
   }
   return { allowed: true };
+}
 
-export function moderation(_content: string) {
-  // TODO: add real moderation logic
-  return true;
+export function moderation(content: string) {
+  return moderateContent(content).allowed;
 }
