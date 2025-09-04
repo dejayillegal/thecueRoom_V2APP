@@ -11,3 +11,4 @@ test('feed loads', async ({ page }) => {
   await page.goto('/feed');
   await expect(page.getByText('Hello Cue')).toBeVisible();
 });
+

@@ -22,12 +22,21 @@ A social playground for cues, built with a Vite/React web app, Expo mobile app, 
         Supabase DB
 ```
 
+## Web
+```bash
+cd apps/web
+npm i
+npm run build
+npm test
+```
+
 ## Mobile
 
 ```bash
 cd apps/mobile
 npm i
 npm run align
+npm test
 npx expo start -c
 ```
 

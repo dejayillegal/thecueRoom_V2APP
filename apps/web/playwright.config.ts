@@ -4,8 +4,8 @@ export default defineConfig({
   testDir: './e2e',
   use: { baseURL: 'http://localhost:3000' },
   webServer: {
-    command: 'npm run start',
+    command: 'npm run build && npm run start',
     port: 3000,
-    reuseExistingServer: true
+    reuseExistingServer: !process.env.CI
   }
 });
