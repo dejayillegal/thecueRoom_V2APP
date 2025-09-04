@@ -45,3 +45,9 @@ Apply schema changes and row-level security policies:
 DRIZZLE_DATABASE_URL="postgres://user:pass@host:5432/db" npx drizzle-kit push:pg --config=packages/db/drizzle.config.ts
 psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
 ```
+
+## Run migrations & policies
+```bash
+DRIZZLE_DATABASE_URL="postgres://user:pass@host:5432/db" npx drizzle-kit push:pg --config=packages/db/drizzle.config.ts
+psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
+```
