@@ -37,7 +37,8 @@ async function fetchProfile(handle: string): Promise<Profile> {
 
 interface Params { handle: string }
 
-export default async function ProfilePage({ params }: { params: Params }) {
-  const profile = await fetchProfile(params.handle);
+export default async function ProfilePage({ params }: { params: Promise<Params> }) {
+  const { handle } = await params;
+  const profile = await fetchProfile(handle);
   return <ProfileClient profile={profile} />;
 }
