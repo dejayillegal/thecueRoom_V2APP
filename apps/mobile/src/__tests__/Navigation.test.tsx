@@ -7,6 +7,14 @@ afterEach(cleanup);
 describe('Navigation', () => {
   it('pushes Login screen', () => {
     const navigationRef = createNavigationContainerRef<RootStackParamList>();
+import { render, act } from '@testing-library/react-native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import RootNavigator, { RootStackParamList } from '../navigation/RootNavigator';
+
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
+
+describe('Navigation', () => {
+  it('pushes Login screen', () => {
     render(
       <NavigationContainer ref={navigationRef}>
         <RootNavigator />
