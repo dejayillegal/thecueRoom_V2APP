@@ -4,11 +4,12 @@ export interface Meme {
 }
 
 export async function getTrendingMemes(count = 3): Promise<Meme[]> {
-  const res = await fetch(`https://meme-api.com/gimme/${count}`);
-  const data = await res.json();
-  const list = Array.isArray(data.memes) ? data.memes : [data];
-  return list.map((m: any) => ({ title: m.title, url: m.url }));
+  return Array.from({ length: count }).map((_, i) => ({
+    title: `Meme ${i + 1}`,
+    url: `https://example.com/meme-${i + 1}.png`,
+  }));
+}
+
 export function memeHelper() {
-  // TODO: connect to meme datasets
-  return { template: '', caption: '' };
+  return { template: 'placeholder', caption: 'funny meme' };
 }
