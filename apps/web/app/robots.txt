@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://thecueroom.com/sitemap.xml
+# Update with actual sitemap URL
+Sitemap: https://example.com/sitemap.xml
