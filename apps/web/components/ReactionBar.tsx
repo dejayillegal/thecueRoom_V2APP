@@ -12,7 +12,7 @@ export default function ReactionBar({ initialLikes = 0 }: { initialLikes?: numbe
       <button
         type="button"
         aria-label="like"
-        className="rounded bg-gray-200 px-2 py-1 text-sm"
+        className="flex h-8 items-center rounded bg-gray-200 px-2 text-sm"
         onClick={() => setLikes((l) => l + 1)}
       >
         👍 {likes}

@@ -16,13 +16,13 @@ export default function ProfileClient({ profile }: { profile: Profile }) {
       <h1 className="mb-4 text-2xl font-bold">@{profile.handle}</h1>
       <div className="mb-4 flex gap-4 border-b pb-2">
         <button
-          className={tab === 'posts' ? 'font-semibold' : ''}
+          className={`${tab === 'posts' ? 'font-semibold' : ''} h-8 px-2`}
           onClick={() => setTab('posts')}
         >
           Posts
         </button>
         <button
-          className={tab === 'about' ? 'font-semibold' : ''}
+          className={`${tab === 'about' ? 'font-semibold' : ''} h-8 px-2`}
           onClick={() => setTab('about')}
         >
           About

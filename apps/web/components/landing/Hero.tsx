@@ -21,13 +21,13 @@ export default function Hero() {
       <div className="mt-8 flex items-center justify-center gap-4">
         <Link
           href="/signup"
-          className="rounded bg-lime px-6 py-3 font-bold text-black"
+          className="flex h-11 items-center rounded bg-lime px-6 font-bold text-black"
         >
           Join the Community
         </Link>
         <Link
           href="#learn-more"
-          className="rounded border border-lime px-6 py-3 font-bold text-lime"
+          className="flex h-11 items-center rounded border border-lime px-6 font-bold text-lime"
         >
           Learn More
         </Link>

@@ -15,7 +15,7 @@ export default function AdminClient({ initialArtists }: { initialArtists: Artist
           <li key={a.id} className="flex items-center justify-between">
             <span>{a.name}</span>
             <button
-              className="rounded bg-green-500 px-2 py-1 text-sm text-white"
+              className="h-8 rounded bg-green-500 px-2 text-sm text-white"
               onClick={() => setList((l) => l.filter((x) => x.id !== a.id))}
             >
               Verify
