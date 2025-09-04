@@ -30,7 +30,9 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "target": "ES2017",
+    "allowJs": true
   },
   "include": [
     "next-env.d.ts",
@@ -42,6 +44,6 @@
     "node_modules",
     "vitest.config.ts",
     "app/profile/**",
-    "components/ui/Button.tsx"
+    "components/ui/button.tsx"
   ]
 }
