@@ -8,7 +8,10 @@ const mono = Source_Code_Pro({ subsets: ['latin'], variable: '--font-mono', disp
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://thecueroom.com'),
-  title: 'TheCueRoom',
+  title: {
+    default: 'TheCueRoom',
+    template: '%s | TheCueRoom'
+  },
   description:
     'Discover the next wave of underground music powered by community and tech.',
 };
