@@ -34,7 +34,7 @@ export default function CommentList({
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <button type="submit" className="rounded bg-blue-500 px-2 py-1 text-sm text-white">
+        <button type="submit" className="h-8 rounded bg-blue-500 px-2 text-sm text-white">
           Post
         </button>
       </form>
