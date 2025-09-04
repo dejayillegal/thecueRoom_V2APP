@@ -21,5 +21,9 @@ supabase login
 supabase link --project-ref <PROJECT_REF>
 supabase functions deploy --no-verify-jwt
 cd ..
+```
+
+### Apply RLS policies
+```bash
 supabase db connect < supabase/sql/rls_policies.sql
 ```

@@ -115,7 +115,7 @@ insert into storage.buckets (id, name, public) values ('memes','memes',false) on
 -- Storage policies
 create policy "Public read media files" on storage.objects for select using (bucket_id in ('media','memes'));
 create policy "Upload own media files" on storage.objects for insert with check (
-  bucket_id in ('media','memes') and auth.uid() = owner
+  bucket_id in ('media','memes') and (auth.uid() = owner or auth.jwt() ->> 'role' = 'admin')
 );
 create policy "Update own media files" on storage.objects for update using (
   bucket_id in ('media','memes') and (auth.uid() = owner or auth.jwt() ->> 'role' = 'admin')
