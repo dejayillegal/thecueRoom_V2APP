@@ -1,0 +1,22 @@
+{
+  "cli": {
+    "version": ">= 3.13.1"
+  },
+  "build": {
+    "production": {
+      "developmentClient": false,
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "gradleCommand": ":app:bundleRelease"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {},
+      "android": {}
+    }
+  }
+}
