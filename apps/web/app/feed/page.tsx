@@ -1,6 +1,5 @@
 import FeedClient from './FeedClient';
 import type { FeedItem } from '@/components/FeedCard';
-import { score } from '@/lib/ranking';
 
 const PLACEHOLDER: FeedItem[] = [
   {
@@ -19,14 +18,17 @@ async function fetchFeed(): Promise<FeedItem[]> {
   if (!url || !key) return PLACEHOLDER;
   try {
     const res = await fetch(
-      `${url}/rest/v1/posts?select=id,title,body,likes,comments,created_at`,
+      `${url}/rest/v1/post_scores?select=post_id,posts(id,title,body,likes,comments,created_at)&order=score.desc`,
       {
         headers: { apikey: key, Authorization: `Bearer ${key}` },
         cache: 'no-store'
       }
     );
     const data = await res.json();
-    return (data as FeedItem[]).sort((a, b) => score(b) - score(a));
+    return (data as any[]).map((d) => ({
+      id: d.post_id,
+      ...d.posts
+    })) as FeedItem[];
   } catch {
     return PLACEHOLDER;
   }

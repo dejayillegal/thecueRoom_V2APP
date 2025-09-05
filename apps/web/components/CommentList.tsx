@@ -1,14 +1,60 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
+import { getBrowserClient } from '../lib/supabase-browser';
 import type { Comment } from './FeedCard';
 
-export default function CommentList({
-  initialComments = []
-}: {
+interface Props {
+  postId: string;
   initialComments?: Comment[];
-}) {
+}
+
+export default function CommentList({ postId, initialComments = [] }: Props) {
   const [comments, setComments] = useState(initialComments);
   const [text, setText] = useState('');
+
+  useEffect(() => {
+    let supabase: ReturnType<typeof getBrowserClient> | null = null;
+    try {
+      supabase = getBrowserClient();
+    } catch {
+      return;
+    }
+    const channel = supabase
+      .channel('comments')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `post_id=eq.${postId}`
+        },
+        (payload) => {
+          const { id, body } = payload.new as { id: string; body: string };
+          setComments((cs) => [...cs, { id, body }]);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase!.removeChannel(channel);
+    };
+  }, [postId]);
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!text) return;
+    setComments((cs) => [...cs, { id: Date.now().toString(), body: text }]);
+    try {
+      const supabase = getBrowserClient();
+      await supabase
+        .from('comments')
+        .insert({ post_id: postId, body: text })
+        .catch(() => {});
+    } catch {
+      /* ignore offline */
+    }
+    setText('');
+  };
 
   return (
     <div className="mt-2">
@@ -19,15 +65,7 @@ export default function CommentList({
           </li>
         ))}
       </ul>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!text) return;
-          setComments((cs) => [...cs, { id: Date.now().toString(), body: text }]);
-          setText('');
-        }}
-        className="flex gap-2"
-      >
+      <form onSubmit={submit} className="flex gap-2">
         <input
           className="flex-1 rounded border px-2 py-1 text-sm"
           placeholder="Add comment"

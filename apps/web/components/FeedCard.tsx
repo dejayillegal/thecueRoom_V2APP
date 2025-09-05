@@ -21,8 +21,8 @@ export default function FeedCard({ item }: { item: FeedItem }) {
     <article className="mb-4 rounded border p-4">
       <h2 className="text-lg font-semibold">{item.title}</h2>
       <p className="mb-2 text-sm">{item.body}</p>
-      <ReactionBar initialLikes={item.likes} />
-      <CommentList initialComments={item.comments} />
+      <ReactionBar postId={item.id} initialLikes={item.likes} />
+      <CommentList postId={item.id} initialComments={item.comments} />
     </article>
   );
 }
