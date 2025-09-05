@@ -1,24 +1,25 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
-    return NextResponse.json({ error: 'not configured' }, { status: 500 });
+// Exchange client credentials for an access token.
+export async function GET() {
+  const id = process.env.SPOTIFY_CLIENT_ID;
+  const secret = process.env.SPOTIFY_CLIENT_SECRET;
+  if (!id || !secret) {
+    return NextResponse.json({ error: 'SPOTIFY credentials missing' }, { status: 501 });
   }
-  const body = await req.json();
+  const auth = Buffer.from(`${id}:${secret}`).toString('base64');
   try {
-    const res = await fetch(`${url}/functions/v1/spotify-token`, {
+    const res = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${anonKey}`
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(body)
+      body: 'grant_type=client_credentials',
     });
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
   } catch {
-    return NextResponse.json({ access_token: 'mock' });
+    return NextResponse.json({ error: 'token fetch failed' }, { status: 502 });
   }
 }
