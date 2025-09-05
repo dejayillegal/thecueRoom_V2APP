@@ -11,12 +11,13 @@ export default function ReportButton({ targetId, targetType }: Props) {
   const [submitting, setSubmitting] = useState(false);
 
   const submit = async () => {
+    const reason = window.prompt('Reason for report?') ?? undefined;
     setSubmitting(true);
     try {
       await fetch('/api/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetId, targetType })
+        body: JSON.stringify({ targetId, targetType, reason })
       });
     } finally {
       setSubmitting(false);

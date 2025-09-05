@@ -113,10 +113,18 @@ export const reportSchema = z.object({
 });
 export type Report = z.infer<typeof reportSchema>;
 
+export const notificationCategoryEnum = z.enum([
+  'general',
+  'gigs',
+  'news',
+  'marketing'
+]);
+export type NotificationCategory = z.infer<typeof notificationCategoryEnum>;
+
 export const notificationPrefSchema = z.object({
   userId: z.string().uuid(),
   expoPushToken: z.string().optional(),
-  categories: z.array(z.string()).default([]),
+  categories: z.array(notificationCategoryEnum).default([]),
   mentions: z.boolean().default(true),
   reactions: z.boolean().default(true),
   gigs: z.boolean().default(true),

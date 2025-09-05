@@ -44,3 +44,7 @@ watchman watch-del-all
 rm -rf $TMPDIR/metro*
 npm start --prefix apps/mobile -- --reset-cache
 ```
+- If pod install fails on iOS:
+```bash
+cd apps/mobile/ios && rm -rf Pods && pod install && cd ../..
+```

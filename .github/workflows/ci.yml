@@ -15,6 +15,7 @@ jobs:
           node-version: 20
       - run: npm run lint:packages
       - run: npm test --workspaces --if-present
+      - run: npm run build --workspaces --if-present
   functions:
     runs-on: ubuntu-latest
     steps:
