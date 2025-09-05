@@ -20,6 +20,7 @@ npm ci
 npm run build
 npm test
 vercel env pull .env
+vercel env push
 vercel deploy --prod
 cd ../..
 ```

@@ -8,7 +8,7 @@ declare module 'expo-notifications' {
   export function getExpoPushTokenAsync(options?: { projectId?: string }): Promise<{ data: string }>;
 }
 
-export async function registerDeviceForPush() {
+export async function registerDeviceForPush(categories: string[] = []) {
   const Notifications = await import('expo-notifications');
   let { status } = await Notifications.getPermissionsAsync();
   if (status !== 'granted') {
@@ -24,10 +24,12 @@ export async function registerDeviceForPush() {
     data: { user }
   } = await supabase.auth.getUser();
   if (user) {
-    await supabase.from('notification_prefs').upsert(
-      { userId: user.id, expoPushToken: token },
-      { onConflict: 'userId' }
-    );
+    await supabase
+      .from('notification_prefs')
+      .upsert(
+        { userId: user.id, expoPushToken: token, categories },
+        { onConflict: 'userId' }
+      );
   }
   return token;
 }

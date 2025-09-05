@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { notificationCategoryEnum } from '@thecueroom/schemas';
 
 export async function POST(req: Request) {
   const supabase = createClient(
@@ -12,7 +13,8 @@ export async function POST(req: Request) {
   if (user?.user_metadata?.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const { category, message } = await req.json();
+  const { category: rawCategory, message } = await req.json();
+  const category = notificationCategoryEnum.parse(rawCategory);
   const { data } = await supabase
     .from('notification_prefs')
     .select('expoPushToken')

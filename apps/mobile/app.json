@@ -3,7 +3,18 @@
     "name": "thecueroom-mobile",
     "slug": "thecueroom-mobile",
     "version": "1.0.0",
-    "plugins": ["expo-notifications"],
+    "plugins": [
+      [
+        "expo-notifications",
+        { "icon": "./assets/notification-icon.png", "color": "#ffffff" }
+      ]
+    ],
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
     "extra": {
       "eas": {
         "projectId": "CHANGE_ME"
