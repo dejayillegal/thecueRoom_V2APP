@@ -22,4 +22,16 @@ export const checks = [
   { path: 'apps/mobile/scripts/expo-dep-guard.mjs', mustExist: true }
 ];
 
+checks.push({
+  path: 'packages/schemas/package.json',
+  mustExist: true,
+  regexes: [{ re: '"zod"\\s*:\\s*"[\\^~]?3\\.', flags: 'm', why: 'schemas declares zod' }]
+});
+
+checks.push({
+  path: 'apps/web/package.json',
+  mustExist: true,
+  regexes: [{ re: '"zod"\\s*:\\s*"[\\^~]?3\\.', flags: 'm', why: 'web depends on zod' }]
+});
+
 export default { checks };
