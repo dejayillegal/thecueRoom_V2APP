@@ -10,14 +10,25 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [showTotp, setShowTotp] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const send = async () => {
+    setError(null);
     const { error } = await supabase.auth.signInWithOtp({ email });
-    if (!error) setSent(true);
+    if (error) {
+      setError(error.message);
+    } else {
+      setSent(true);
+    }
   };
 
   const oauth = async (provider: Provider) => {
-    await supabase.auth.signInWithOAuth({ provider });
+    setError(null);
+    try {
+      await supabase.auth.signInWithOAuth({ provider });
+    } catch (e: any) {
+      setError(e.message);
+    }
   };
 
   if (showTotp) {
@@ -49,6 +60,9 @@ export default function Login() {
           <Button title="Sign in with Apple" color={theme.colors.lime} onPress={() => oauth('apple')} />
           <View style={{ height: 12 }} />
           <Button title="Setup TOTP" color={theme.colors.lime} onPress={() => setShowTotp(true)} />
+          {error && (
+            <Text style={{ color: 'red', marginTop: 12 }}>{error}</Text>
+          )}
         </>
       )}
     </View>

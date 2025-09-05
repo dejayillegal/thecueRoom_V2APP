@@ -10,7 +10,10 @@ function serverClient() {
 
 export async function signInWithOtp(email: string) {
   const supabase = serverClient();
-  const { error } = await supabase.auth.signInWithOtp({ email });
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/callback` },
+  });
   if (error) throw error;
 }
 
