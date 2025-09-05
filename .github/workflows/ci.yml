@@ -15,7 +15,7 @@ jobs:
       - run: npm ci || npm i
       # Assemble large assets BEFORE audit so auditor sees required SVGs
       - name: Assemble large assets (optional)
-        run: node scripts/assemble-assets.ts || true
+        run: node scripts/assemble-assets.mjs || true
       - name: Repo auditor
         run: node scripts/repo-audit.mjs
   packages:
