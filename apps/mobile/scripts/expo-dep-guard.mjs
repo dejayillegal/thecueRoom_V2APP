@@ -24,10 +24,9 @@ function checkContains(file, needles) {
 }
 
 console.log('\n[guard] Expo dependency alignment — start');
-run('npx', ['expo', 'doctor']);                // ✅ correct binary
-run('npx', ['expo', 'install', '--fix']);      // align all
-// Re-pin frequent drifters
-run('npx', ['expo', 'install', 'react-native-screens', 'react-native-safe-area-context']);
+run('npx', ['expo-doctor']);              // official doctor shim
+run('npx', ['expo', 'install', '--fix']); // align all managed deps
+run('npx', ['expo', 'install', 'react-native-screens', 'react-native-safe-area-context']); // re-pin
 
 checkContains('babel.config.js', ['babel-preset-expo','react-native-reanimated/plugin']);
 checkContains('metro.config.js', ['expo/metro-config','getDefaultConfig','FORBIDDEN','disableHierarchicalLookup']);

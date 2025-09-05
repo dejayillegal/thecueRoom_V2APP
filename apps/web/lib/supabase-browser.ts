@@ -6,7 +6,7 @@ export function createBrowserClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost';
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'anon';
   return createClient(url, anon, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
 }
 
@@ -14,8 +14,3 @@ export function getBrowserClient() {
   if (!client) client = createBrowserClient();
   return client;
 }
-
-// Convenience export for modules that expect `supabase`
-export const supabase = getBrowserClient();
-
-export type { SupabaseClient } from '@supabase/supabase-js';
