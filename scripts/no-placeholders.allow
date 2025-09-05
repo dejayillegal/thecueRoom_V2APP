@@ -1,0 +1,4 @@
+# Ignore generated files
+.git/hooks/**
+**/package-lock.json
+scripts/no-placeholders.mjs

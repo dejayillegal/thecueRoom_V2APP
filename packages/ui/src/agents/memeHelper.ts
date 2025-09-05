@@ -11,5 +11,5 @@ export async function getTrendingMemes(count = 3): Promise<Meme[]> {
 }
 
 export function memeHelper() {
-  return { template: 'placeholder', caption: 'funny meme' };
+  return { template: 'default', caption: 'funny meme' };
 }
