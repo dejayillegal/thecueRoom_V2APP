@@ -11,10 +11,11 @@ export function createBrowserClient() {
 }
 
 export function getBrowserClient() {
-  if (!client) {
-    client = createBrowserClient();
-  }
+  if (!client) client = createBrowserClient();
   return client;
 }
+
+// Convenience export for modules that expect `supabase`
+export const supabase = getBrowserClient();
 
 export type { SupabaseClient } from '@supabase/supabase-js';
