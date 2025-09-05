@@ -9,6 +9,39 @@ const PAGE_SIZE = 10;
 
 type Post = { id: string; content: string; created_at?: string };
 
+function PostItem({ post }: { post: Post }) {
+  const [likes, setLikes] = useState(0);
+  const [comments, setComments] = useState(0);
+
+  const react = async () => {
+    setLikes((l) => l + 1);
+    try {
+      await supabase.from('reactions').insert({ post_id: post.id, kind: 'heart' });
+    } catch {
+      /* ignore offline */
+    }
+  };
+
+  const comment = async () => {
+    setComments((c) => c + 1);
+    try {
+      await supabase.from('comments').insert({ post_id: post.id, body: '...' });
+    } catch {
+      /* ignore offline */
+    }
+  };
+
+  return (
+    <View style={{ padding: 16, borderBottomWidth: 1, borderColor: theme.colors.surface }}>
+      <Text style={{ color: theme.colors.text, marginBottom: 8 }}>{post.content}</Text>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <Button title={`React (${likes})`} onPress={react} />
+        <Button title={`Comment (${comments})`} onPress={comment} />
+      </View>
+    </View>
+  );
+}
+
 export default function Feed() {
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -59,15 +92,7 @@ export default function Feed() {
 
   const posts = data?.pages.flatMap((p) => p) ?? [];
 
-  const renderItem = ({ item }: { item: Post }) => (
-    <View style={{ padding: 16, borderBottomWidth: 1, borderColor: theme.colors.surface }}>
-      <Text style={{ color: theme.colors.text, marginBottom: 8 }}>{item.content}</Text>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <Button title="React" onPress={() => {}} />
-        <Button title="Comment" onPress={() => {}} />
-      </View>
-    </View>
-  );
+  const renderItem = ({ item }: { item: Post }) => <PostItem post={item} />;
 
   return (
     <FlatList

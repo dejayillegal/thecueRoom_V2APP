@@ -1,5 +1,5 @@
-import FeedClient from './FeedClient';
-import type { FeedItem } from '@/components/FeedCard';
+import FeedClient from '@/app/feed/FeedClient';
+import type { FeedItem } from '@/components/feed/FeedCard';
 
 const PLACEHOLDER: FeedItem[] = [
   {
