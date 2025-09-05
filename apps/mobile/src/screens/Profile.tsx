@@ -32,6 +32,7 @@ export default function Profile({ route }: NativeStackScreenProps<RootStackParam
   });
 
   const isOwner = sessionId === profileId;
+  const canEdit = isOwner && !!profile?.verified;
   const [name, setName] = useState('');
   useEffect(() => {
     if (profile) setName(profile.name ?? '');
@@ -48,7 +49,7 @@ export default function Profile({ route }: NativeStackScreenProps<RootStackParam
       <Text style={{ color: theme.colors.text, fontSize: 24 }}>
         {profile.name} {profile.verified && '✅'}
       </Text>
-      {isOwner && (
+      {canEdit && (
         <>
           <TextInput
             value={name}
