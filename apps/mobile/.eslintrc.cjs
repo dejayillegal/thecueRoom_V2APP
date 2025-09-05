@@ -10,4 +10,16 @@ module.exports = {
       alias: { map: [['@', './src']] },
     },
   },
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+  },
+  overrides: [
+    {
+      files: ['**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
+  ],
 };
