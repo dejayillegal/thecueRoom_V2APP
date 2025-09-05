@@ -18,7 +18,6 @@
     "test": "npm run test:mobile",
     "ci": "npm run lint:packages && npm run lint:web && npm run build:web && npm run test:mobile && npm run lint:mobile",
     "audit": "node scripts/repo-audit.mjs",
-    "audit:fix": "node scripts/repo-audit.mjs --fix",
     "verify": "bash ./scripts/local-verify.sh",
     "bootstrap:packages": "npm ci --prefix packages/schemas || npm i --prefix packages/schemas"
   }
