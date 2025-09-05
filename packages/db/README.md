@@ -13,3 +13,10 @@ DRIZZLE_DATABASE_URL="postgres://user:pass@host:5432/db" npx drizzle-kit push:pg
 psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
 ```
 
+
+## Ranking View
+
+```bash
+# apply ranking view
+psql "$DRIZZLE_DATABASE_URL" -f packages/db/src/ranking.sql
+```
