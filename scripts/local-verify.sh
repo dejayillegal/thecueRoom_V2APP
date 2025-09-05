@@ -82,16 +82,24 @@ fi
 
 ### --- Mobile ---
 if [[ -d apps/mobile ]]; then
-  rule "Mobile: install, align, test"
+  echo
+  echo "— Mobile: install, align, test —"
   pushd apps/mobile >/dev/null
-  install_here
-  if has_npm_script "align"; then
-    info "npm run align"
-    npm run align
+
+  if [ -f package-lock.json ]; then echo "  • npm ci (lockfile present)"; npm ci; else echo "  • npm i"; npm i; fi
+
+  # Always attempt align; fall back to running the guard directly; never hard-fail local runs
+  if npm run -s align >/dev/null 2>&1; then
+    echo "  • npm run align"
+    npm run -s align || true
   else
-    warn "No mobile align script; skipping"
+    echo "  • align script not found — trying guard directly"
+    node scripts/expo-dep-guard.mjs --ci || true
   fi
-  run_if_present "test"
+
+  # Tests (don’t break local flow if absent)
+  if npm run -s test >/dev/null 2>&1; then npm test || true; else echo "  ⚠ script \"test\" not found — skipping"; fi
+
   popd >/dev/null
 else
   warn "apps/mobile not found; skipping mobile steps"

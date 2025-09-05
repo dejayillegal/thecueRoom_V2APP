@@ -20,6 +20,7 @@
     "@supabase/supabase-js": "^2.45.0",
     "localforage": "1.10.0",
     "maplibre-gl": "5.7.0",
+    "zod": "^3.23.8",
     "@thecueroom/ui": "file:../../packages/ui",
     "@thecueroom/schemas": "file:../../packages/schemas"
   },
