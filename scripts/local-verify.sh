@@ -70,6 +70,12 @@ fi
 ### --- Web ---
 if [[ -d apps/web ]]; then
   rule "Web: install, lint, test, build"
+  echo "  • Installing shared package deps (packages/schemas)"
+  if [ -f packages/schemas/package-lock.json ]; then
+    npm ci --prefix packages/schemas
+  else
+    npm i --prefix packages/schemas
+  fi
   pushd apps/web >/dev/null
   install_here
   run_if_present "lint"
