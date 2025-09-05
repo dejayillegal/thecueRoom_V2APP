@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler/jestSetup';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
-import { NativeModules } from 'react-native';
+import { NativeModules as _NM } from 'react-native';
+import type React from 'react';
 
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'anon';
@@ -32,12 +32,35 @@ jest.mock('./src/lib/supabase', () => ({
   },
 }));
 
-NativeModules.PlatformConstants = NativeModules.PlatformConstants || { forceTouchAvailable: false };
-
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+
+jest.mock('react-native-screens', () => ({
+  enableScreens: jest.fn(),
+  Screen: (p: { children?: React.ReactNode }) => p?.children ?? null,
+  ScreenContainer: (p: { children?: React.ReactNode }) => p?.children ?? null,
+}));
+
+jest.mock('react-native-safe-area-context', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const React = require('react');
+  return {
+    SafeAreaProvider: ({ children }: { children?: React.ReactNode }) =>
+      React.createElement('SafeAreaProvider', null, children),
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+  };
+});
+
+// PlatformConstants to satisfy RN internals
+interface RNPlatformConstants {
+  forceTouchAvailable: boolean;
+}
+(_NM as { PlatformConstants?: RNPlatformConstants }).PlatformConstants =
+  (_NM as { PlatformConstants?: RNPlatformConstants }).PlatformConstants || {
+    forceTouchAvailable: false,
+  };
+
+// Silence NativeAnimatedHelper warnings
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-jest.mock('react-native-screens');
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 afterEach(() => {
   jest.clearAllMocks();
