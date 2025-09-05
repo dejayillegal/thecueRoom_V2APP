@@ -1,16 +1,32 @@
 import { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import { supabase } from '../lib/supabase';
+import TOTPSetup from '../components/TOTPSetup';
 import { theme } from '../theme';
+
+type Provider = 'google' | 'apple';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [showTotp, setShowTotp] = useState(false);
 
   const send = async () => {
     const { error } = await supabase.auth.signInWithOtp({ email });
     if (!error) setSent(true);
   };
+
+  const oauth = async (provider: Provider) => {
+    await supabase.auth.signInWithOAuth({ provider });
+  };
+
+  if (showTotp) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background }}>
+        <TOTPSetup />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16, backgroundColor: theme.colors.background }}>
@@ -26,7 +42,13 @@ export default function Login() {
             keyboardType="email-address"
             style={{ borderWidth: 1, borderColor: theme.colors.muted, padding: 8, color: theme.colors.text, marginBottom: 12 }}
           />
-          <Button title="Send Magic Link" onPress={send} />
+          <Button title="Send Magic Link" color={theme.colors.lime} onPress={send} />
+          <View style={{ height: 12 }} />
+          <Button title="Sign in with Google" color={theme.colors.lime} onPress={() => oauth('google')} />
+          <View style={{ height: 12 }} />
+          <Button title="Sign in with Apple" color={theme.colors.lime} onPress={() => oauth('apple')} />
+          <View style={{ height: 12 }} />
+          <Button title="Setup TOTP" color={theme.colors.lime} onPress={() => setShowTotp(true)} />
         </>
       )}
     </View>
