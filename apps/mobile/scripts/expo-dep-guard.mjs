@@ -23,8 +23,15 @@ function checkContains(file, needles) {
   return s;
 }
 
+const doctor = (() => {
+  const tryCmd = (cmd, args) => spawnSync(cmd, args, { stdio: 'pipe' });
+  const a = tryCmd('npx', ['expo-doctor', '--version']);
+  if (a.status === 0) return ['expo-doctor'];      // npx expo-doctor exists
+  return ['expo', 'doctor'];                       // fallback (classic)
+})();
+
 console.log('\n[guard] Expo dependency alignment — start');
-run('npx', ['expo-doctor']);              // official doctor shim
+run('npx', doctor);
 run('npx', ['expo', 'install', '--fix']); // align all managed deps
 run('npx', ['expo', 'install', 'react-native-screens', 'react-native-safe-area-context']); // re-pin
 

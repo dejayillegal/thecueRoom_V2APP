@@ -6,6 +6,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    externalDir: true,
+  },
   transpilePackages: ['@thecueroom/ui', '@thecueroom/schemas'],
   outputFileTracingRoot: path.resolve(__dirname, '../../')
 };
