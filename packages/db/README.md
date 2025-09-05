@@ -20,3 +20,6 @@ psql "$DRIZZLE_DATABASE_URL" -f supabase/sql/rls_policies.sql
 # apply ranking view
 psql "$DRIZZLE_DATABASE_URL" -f packages/db/src/ranking.sql
 ```
+
+This creates the `post_scores` view used to order the community feed. Re-run the
+command after migrations to keep the view up to date.
