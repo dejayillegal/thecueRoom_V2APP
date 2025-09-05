@@ -7,8 +7,8 @@ const sourceCode = Source_Code_Pro({ subsets: ['latin'], variable: '--font-mono'
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html className="dark" lang="en">
-      <body className={`${inter.className} ${sourceCode.variable} bg-[#0B0B0B] text-white`}>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} ${sourceCode.variable} bg-[var(--bg)] text-white`}>
         {children}
       </body>
     </html>
