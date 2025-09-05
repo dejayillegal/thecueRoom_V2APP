@@ -35,8 +35,7 @@ install_here() {
 }
 
 has_npm_script() {
-  # Greps npm's script list for an exact script name
-  npm run 2>/dev/null | sed -n 's/^  *\([^ ]\+\) .*/\1/p' | grep -qx "$1"
+  node -e "try{const s=require('./package.json').scripts||{};process.exit(s['$1']?0:1)}catch{process.exit(1)}"
 }
 
 run_if_present() {
