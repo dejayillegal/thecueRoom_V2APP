@@ -96,5 +96,5 @@ jobs:
       - run: npm run align
       - run: npm test --if-present
       - run: npm run lint --if-present
-      # Do not assume a "build" script exists for Expo; keep it optional
-      - run: npm run build --if-present
+      - name: Build (if present)
+        run: npm run build --if-present
