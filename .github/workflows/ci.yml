@@ -17,6 +17,8 @@ jobs:
         run: node scripts/assemble-assets.ts || true
       - name: Run repo auditor
         run: node scripts/repo-audit.mjs
+      - name: Scan for placeholders
+        run: npm run scan:placeholders
   packages:
     needs: repo-audit
     runs-on: ubuntu-latest
@@ -58,6 +60,10 @@ jobs:
   web:
     needs: repo-audit
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: 'http://localhost'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'anon'
+      NEXT_TELEMETRY_DISABLED: '1'
     defaults:
       run:
         working-directory: apps/web
@@ -92,7 +98,7 @@ jobs:
           cache-dependency-path: apps/mobile/package-lock.json
       # Pre-align is advisory (non-blocking) to help pin native deps in CI
       - name: Pre-align Expo deps (non-blocking)
-        run: node scripts/expo-dep-guard.mjs --ci || true
+        run: node scripts/expo-dep-guard.mjs --ci || node scripts/expo-dep-guard.mjs --ci --fallback
       - run: npm ci || npm i
       # Run the real align step (must pass)
       - run: npm run align

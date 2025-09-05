@@ -54,18 +54,12 @@ cd "$root"
 rule "Root install"
 install_here
 
-# Optional: assemble landing assets if script exists
-if [[ -f scripts/assemble-assets.mjs ]]; then
-  info "Syncing MarketingLanding.svg"
-  node scripts/assemble-assets.mjs || warn "assemble-assets.mjs returned non-zero (continuing)"
-fi
+rule "Assemble assets"
+node scripts/assemble-assets.ts || true
 
 rule "Repo audit"
-if has_npm_script "audit"; then
-  npm run audit
-else
-  warn "No root audit script; skipping"
-fi
+npm run audit
+npm run scan:placeholders
 
 ### --- Web ---
 if [[ -d apps/web ]]; then

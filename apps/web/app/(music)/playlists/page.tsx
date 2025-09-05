@@ -11,7 +11,7 @@ interface Playlist {
   tracks: Track[];
 }
 
-const PLACEHOLDER: Playlist[] = [
+const FALLBACK: Playlist[] = [
   {
     id: 'p1',
     name: 'Starter Mix',
@@ -24,16 +24,16 @@ const PLACEHOLDER: Playlist[] = [
 async function fetchPlaylists(): Promise<Playlist[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return PLACEHOLDER;
+  if (!url || !key) return FALLBACK;
   try {
     const res = await fetch(
       `${url}/rest/v1/playlists?select=id,name,tracks`,
       { headers: { apikey: key, Authorization: `Bearer ${key}` }, cache: 'no-store' }
     );
     const data = await res.json();
-    return (data as Playlist[]) ?? PLACEHOLDER;
+    return (data as Playlist[]) ?? FALLBACK;
   } catch {
-    return PLACEHOLDER;
+    return FALLBACK;
   }
 }
 

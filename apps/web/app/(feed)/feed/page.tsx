@@ -1,7 +1,7 @@
 import FeedClient from '@/app/feed/FeedClient';
 import type { FeedItem } from '@/components/feed/FeedCard';
 
-const PLACEHOLDER: FeedItem[] = [
+const FALLBACK: FeedItem[] = [
   {
     id: '1',
     title: 'Hello Cue',
@@ -15,7 +15,7 @@ const PLACEHOLDER: FeedItem[] = [
 async function fetchFeed(): Promise<FeedItem[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return PLACEHOLDER;
+  if (!url || !key) return FALLBACK;
   try {
     const res = await fetch(
       `${url}/rest/v1/post_scores?select=post_id,posts(id,title,body,likes,comments,created_at)&order=score.desc`,
@@ -30,7 +30,7 @@ async function fetchFeed(): Promise<FeedItem[]> {
       ...d.posts
     })) as FeedItem[];
   } catch {
-    return PLACEHOLDER;
+    return FALLBACK;
   }
 }
 

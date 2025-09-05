@@ -23,15 +23,30 @@ function checkContains(file, needles) {
   return s;
 }
 
-const doctor = (() => {
-  const tryCmd = (cmd, args) => spawnSync(cmd, args, { stdio: 'pipe' });
-  const a = tryCmd('npx', ['expo-doctor', '--version']);
-  if (a.status === 0) return ['expo-doctor'];      // npx expo-doctor exists
-  return ['expo', 'doctor'];                       // fallback (classic)
-})();
+const useFallback = process.argv.includes('--fallback');
+
+function runDoctor() {
+  if (useFallback) {
+    run('npx', ['expo-doctor']);
+    return;
+  }
+  const res = spawnSync('npx', ['expo', 'doctor'], { stdio: 'pipe' });
+  if (
+    res.status !== 0 &&
+    (res.stderr?.toString().includes('not supported') ||
+      res.stdout?.toString().includes('not supported'))
+  ) {
+    console.warn('[guard] expo doctor not supported — falling back to expo-doctor');
+    run('npx', ['expo-doctor']);
+    return;
+  }
+  process.stdout.write(res.stdout);
+  process.stderr.write(res.stderr);
+  if (res.status !== 0) process.exit(res.status ?? 1);
+}
 
 console.log('\n[guard] Expo dependency alignment — start');
-run('npx', doctor);
+runDoctor();
 run('npx', ['expo', 'install', '--fix']); // align all managed deps
 run('npx', ['expo', 'install', 'react-native-screens', 'react-native-safe-area-context']); // re-pin
 
