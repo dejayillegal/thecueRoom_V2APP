@@ -47,7 +47,9 @@ export default function RootNavigator() {
           <Stack.Screen name="Playlists" component={Playlists} />
           <Stack.Screen name="GigRadar" component={GigRadar} />
           <Stack.Screen name="Profile" component={Profile} />
-          <Stack.Screen name="Admin" component={Admin} />
+          {session.user.app_metadata?.role === 'admin' && (
+            <Stack.Screen name="Admin" component={Admin} />
+          )}
         </>
       ) : (
         <Stack.Screen name="Login" component={Login} />

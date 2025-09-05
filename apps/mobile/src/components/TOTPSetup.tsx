@@ -8,6 +8,7 @@ export default function TOTPSetup() {
   const [factorId, setFactorId] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -21,8 +22,11 @@ export default function TOTPSetup() {
 
   const verify = async () => {
     if (!factorId) return;
+    setError(null);
     const { error } = await supabase.auth.mfa.verify({ factorId, code });
-    if (!error) {
+    if (error) {
+      setError(error.message);
+    } else {
       const user = (await supabase.auth.getUser()).data.user;
       if (user) {
         await supabase.from('profiles').update({ mfa_enrolled: true }).eq('id', user.id);
@@ -49,6 +53,9 @@ export default function TOTPSetup() {
         style={{ borderWidth: 1, borderColor: theme.colors.muted, padding: 8, color: theme.colors.text, marginBottom: 12 }}
       />
       <Button title="Verify" color={theme.colors.lime} onPress={verify} />
+      {error && (
+        <Text style={{ color: 'red', marginTop: 12 }}>{error}</Text>
+      )}
     </View>
   );
 }
