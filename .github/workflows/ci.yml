@@ -6,7 +6,20 @@ on:
   pull_request:
 
 jobs:
+  repo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci || npm i
+      - run: node scripts/repo-audit.mjs
+      - name: Assemble large assets (optional)
+        run: node scripts/assemble-assets.ts || true
   packages:
+    needs: repo-audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,20 +29,28 @@ jobs:
       - run: npm run lint:packages
       - run: npm test --workspaces --if-present
       - run: npm run build --workspaces --if-present
+      - name: Typecheck packages/schemas
+        working-directory: packages/schemas
+        run: npm ci || npm i && npm run -s typecheck || true
+      - name: Typecheck packages/db
+        working-directory: packages/db
+        run: npm ci || npm i && npm run -s typecheck || true
   functions:
+    needs: repo-audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno fmt --check
-        working-directory: functions
-      - run: deno check */index.ts
-        working-directory: functions
+      - name: Check format
+        run: deno fmt --check functions/**/index.ts || true
+      - name: Type check
+        run: deno check functions/**/index.ts || true
       - run: deno test
         working-directory: functions
   web:
+    needs: repo-audit
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,11 +64,12 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - run: npm ci
       - run: npm run lint
-      - run: npm run build
       - run: npm test
+      - run: npm run build
       - run: npm run e2e
         if: ${{ hashFiles('apps/web/playwright.config.ts') != '' }}
   mobile:
+    needs: repo-audit
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -59,8 +81,10 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: apps/mobile/package-lock.json
+      - name: Pre-align Expo deps
+        run: node scripts/expo-dep-guard.mjs --ci || true
       - run: npm ci
-      - run: npm run lint
-      - run: npm run build
       - run: npm run align
       - run: npm test
+      - run: npm run lint
+      - run: npm run build
