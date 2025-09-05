@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Button, FlatList, TextInput } from 'react-native';
+import { supabase } from '../lib/supabase';
 import { theme } from '../theme';
 
 type QueueItem = { id: string; content: string };
@@ -20,8 +21,14 @@ export default function Admin() {
   ]);
   const [newSrc, setNewSrc] = useState('');
 
-  const approve = (id: string) => setQueue((q) => q.filter((i) => i.id !== id));
-  const reject = (id: string) => setQueue((q) => q.filter((i) => i.id !== id));
+  const approve = async (id: string) => {
+    await supabase.from('reports').update({ status: 'approved' }).eq('id', id);
+    setQueue((q) => q.filter((i) => i.id !== id));
+  };
+  const reject = async (id: string) => {
+    await supabase.from('reports').update({ status: 'rejected' }).eq('id', id);
+    setQueue((q) => q.filter((i) => i.id !== id));
+  };
   const move = (idx: number, dir: -1 | 1) => {
     const copy = [...playlists];
     const target = idx + dir;

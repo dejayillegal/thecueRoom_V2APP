@@ -2,6 +2,12 @@
   "expo": {
     "name": "thecueroom-mobile",
     "slug": "thecueroom-mobile",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "plugins": ["expo-notifications"],
+    "extra": {
+      "eas": {
+        "projectId": "CHANGE_ME"
+      }
+    }
   }
 }
