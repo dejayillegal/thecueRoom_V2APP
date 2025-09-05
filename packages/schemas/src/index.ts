@@ -115,6 +115,8 @@ export type Report = z.infer<typeof reportSchema>;
 
 export const notificationPrefSchema = z.object({
   userId: z.string().uuid(),
+  expoPushToken: z.string().optional(),
+  categories: z.array(z.string()).default([]),
   mentions: z.boolean().default(true),
   reactions: z.boolean().default(true),
   gigs: z.boolean().default(true),

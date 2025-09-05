@@ -28,3 +28,19 @@ rm -rf $TMPDIR/metro*
 npm start --prefix apps/mobile -- --reset-cache
 ```
 - Ensure `node --version` returns v20.
+
+## Additional Troubleshooting
+- Verify dependencies with Expo Doctor:
+```bash
+npm run doctor --prefix apps/mobile
+```
+- Hermes compile errors on iOS sometimes require reinstalling pods:
+```bash
+cd apps/mobile/ios && pod install && cd ../..
+```
+- If Metro cache persists:
+```bash
+watchman watch-del-all
+rm -rf $TMPDIR/metro*
+npm start --prefix apps/mobile -- --reset-cache
+```
