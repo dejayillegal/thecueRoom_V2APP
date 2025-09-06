@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "scripts": {
     "lint:web": "npm run lint --prefix apps/web",
-    "build:web": "npm run build --prefix apps/web",
+    "build:web": "npm run bootstrap:packages && npm run build --prefix apps/web",
     "lint:mobile": "npm run lint --prefix apps/mobile",
     "test:mobile": "npm run test --prefix apps/mobile",
     "lint:schemas": "npx -y -p typescript@5.4.5 tsc -p packages/schemas/tsconfig.json",
