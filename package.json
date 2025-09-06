@@ -21,6 +21,6 @@
     "audit:fix": "node scripts/repo-audit.mjs --fix",
     "scan:placeholders": "node scripts/no-placeholders.mjs",
     "verify:local": "bash ./scripts/local-verify.sh",
-    "bootstrap:packages": "npm ci --prefix packages/schemas || npm i --prefix packages/schemas"
+    "bootstrap:packages": "npm --prefix packages/schemas ci --no-audit --no-fund || npm --prefix packages/schemas i --no-audit --no-fund"
   }
 }

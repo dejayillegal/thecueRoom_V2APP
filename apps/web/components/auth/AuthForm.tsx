@@ -1,16 +1,25 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { getBrowserClient } from '../../lib/supabase-browser';
 
 export default function AuthForm() {
-  const supabase = getBrowserClient();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setSupabase(getBrowserClient());
+  }, []);
+
   const sendLink = async () => {
+    if (!supabase) return;
     setError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${location.origin}/callback` } });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${location.origin}/callback` }
+    });
     if (error) {
       setError(error.message);
     } else {
@@ -19,7 +28,11 @@ export default function AuthForm() {
   };
 
   const oauth = async (provider: 'google' | 'apple') => {
-    await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}/callback` } });
+    if (!supabase) return;
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${location.origin}/callback` }
+    });
   };
 
   return (
