@@ -4,6 +4,7 @@ let client: SupabaseClient | null = null;
 
 export function createMobileClient() {
   const url = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+  // Prefer publishable key if available, otherwise fall back to anon key.
   const key =
     process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
     process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
