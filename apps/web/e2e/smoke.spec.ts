@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('home renders without console errors', async ({ page }) => {
-  const errors: string[] = [];
+test.beforeEach(async ({ page }) => {
+  // Fail test on console.error
   page.on('console', (msg) => {
-    if (msg.type() === 'error') errors.push(msg.text());
+    if (msg.type() === 'error') throw new Error(`Console error: ${msg.text()}`);
   });
+});
+
+test('landing renders without console errors', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('img[src="/landing.svg"]')).toBeVisible();
-  expect(errors).toEqual([]);
 });
