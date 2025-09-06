@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-static';
+export const revalidate = 0;
+
 // Exchange client credentials for an access token.
 export async function GET() {
   const id = process.env.SPOTIFY_CLIENT_ID;

@@ -1,6 +1,12 @@
 import type { FeedItem } from '@/components/FeedCard';
 import ProfileClient from './ProfileClient';
 
+export const dynamic = 'force-static';
+export const revalidate = 0;
+export function generateStaticParams() {
+  return [];
+}
+
 interface Profile {
   handle: string;
   bio: string;
