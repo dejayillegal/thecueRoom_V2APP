@@ -31,7 +31,7 @@ async function fetchPlaylists(): Promise<Playlist[]> {
       { headers: { apikey: key, Authorization: `Bearer ${key}` }, cache: 'no-store' }
     );
     const data = await res.json();
-    return (data as Playlist[]) ?? FALLBACK;
+    return Array.isArray(data) ? (data as Playlist[]) : FALLBACK;
   } catch {
     return FALLBACK;
   }
