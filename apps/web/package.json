@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "check:deps": "node ../../scripts/verify-web-deps.mjs",
     "dev": "next dev",
     "lint": "eslint --ext .ts,.tsx .",
     "test": "vitest run",
