@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler/jestSetup';
-import { NativeModules as _NM } from 'react-native';
-import type React from 'react';
+import * as React from 'react';
+import { Image as RNImage } from 'react-native';
 
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'anon';
@@ -44,8 +44,7 @@ jest.mock('react-native-screens', () => ({
 }));
 
 jest.mock('react-native-safe-area-context', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const React = require('react');
+  const React = jest.requireActual('react');
   const SafeAreaInsetsContext = React.createContext({
     top: 0,
     bottom: 0,
@@ -66,34 +65,11 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
-// PlatformConstants to satisfy RN internals
-interface RNPlatformConstants {
-  forceTouchAvailable: boolean;
-}
-(_NM as { PlatformConstants?: RNPlatformConstants }).PlatformConstants =
-  (_NM as { PlatformConstants?: RNPlatformConstants }).PlatformConstants || {
-    forceTouchAvailable: false,
-  };
-
-// Silence NativeAnimatedHelper warnings
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-
-afterEach(() => {
-  jest.clearAllMocks();
-  jest.clearAllTimers();
-});
-
-afterAll(() => {
-  jest.useRealTimers();
-});
-
 // --- expo-image mock (ESM-only real module -> map to RN Image) ---
 jest.mock('expo-image', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const React = require('react');
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { Image } = require('react-native');
-  const Img = React.forwardRef((props: any, ref) => React.createElement(Image, { ref, ...props }));
+  const React = jest.requireActual('react');
+  const { Image: RNImage } = jest.requireActual('react-native');
+  const Img = React.forwardRef((props: any, ref) => React.createElement(RNImage, { ref, ...props }));
   (Img as any).displayName = 'ExpoImageMock';
   return { Image: Img, default: Img };
 });
@@ -110,22 +86,36 @@ jest.mock(
 // --- expo-notifications mock (avoid native init in tests) ---
 jest.mock(
   'expo-notifications',
-  () => {
-    return {
-      __esModule: true,
-      default: {},
-      addNotificationReceivedListener: jest.fn(),
-      addNotificationResponseReceivedListener: jest.fn(),
-      removeNotificationSubscription: jest.fn(),
-      getPermissionsAsync: jest.fn(async () => ({ status: 'granted', granted: true })),
-      requestPermissionsAsync: jest.fn(async () => ({ status: 'granted', granted: true })),
-      scheduleNotificationAsync: jest.fn(async () => ({})),
-      cancelAllScheduledNotificationsAsync: jest.fn(async () => {}),
-      setNotificationHandler: jest.fn(),
-    };
-  },
+  () => ({
+    __esModule: true,
+    default: {},
+    addNotificationReceivedListener: jest.fn(),
+    addNotificationResponseReceivedListener: jest.fn(),
+    removeNotificationSubscription: jest.fn(),
+    getPermissionsAsync: jest.fn(async () => ({ status: 'granted', granted: true })),
+    requestPermissionsAsync: jest.fn(async () => ({ status: 'granted', granted: true })),
+    scheduleNotificationAsync: jest.fn(async () => ({})),
+    cancelAllScheduledNotificationsAsync: jest.fn(async () => {}),
+    setNotificationHandler: jest.fn(),
+  }),
   { virtual: true }
 );
+
+// PlatformConstants shim for RN internals
+import { NativeModules as _NM } from 'react-native';
+(_NM as any).PlatformConstants = (_NM as any).PlatformConstants || { forceTouchAvailable: false };
+
+// Silence NativeAnimatedHelper warnings
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+afterEach(() => {
+  jest.clearAllMocks();
+  jest.clearAllTimers();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
 
 // Optional: soften noisy "not wrapped in act(...)" during async query polling in tests
 const _origError = console.error;
@@ -141,11 +131,8 @@ afterAll(() => {
 });
 
 // Navigation minimal mock (if tests import @react-navigation/native directly)
-jest.mock('@react-navigation/native', () => {
-  const React = require('react');
-  return {
-    ...jest.requireActual('@react-navigation/native'),
-    useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
-    useRoute: () => ({ params: {} }),
-  };
-});
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
+  useRoute: () => ({ params: {} }),
+}));
