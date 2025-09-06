@@ -6,6 +6,7 @@
     "dev": "next dev",
     "lint": "eslint --ext .ts,.tsx .",
     "test": "vitest run",
+    "prebuild": "npm --prefix ../../packages/schemas ci --no-audit --no-fund || npm --prefix ../../packages/schemas i --no-audit --no-fund",
     "build": "next build",
     "build:static": "STATIC_EXPORT=1 next build && next export -o out",
     "preview:static": "npx http-server ./out -p 4173 -c-1 --silent",
