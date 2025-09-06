@@ -21,5 +21,12 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
       },
     },
+    {
+      files: ['jest.setup.ts'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      },
+    },
   ],
 };
