@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import Bloom from './Bloom';
 
 export default function Hero() {
-  const [showImage, setShowImage] = useState(true);
-
   return (
     <section className="relative mx-auto max-w-[1200px] px-6 py-24 text-center">
       <Bloom />
@@ -32,19 +28,16 @@ export default function Hero() {
           Learn More
         </Link>
       </div>
-      {showImage && (
-        <div className="mt-16">
-          <Image
-            src="/landing.svg"
-            alt="TheCueRoom landing illustration"
-            width={400}
-            height={300}
-            className="h-auto w-full"
-            onError={() => setShowImage(false)}
-            priority
-          />
-        </div>
-      )}
+      <div className="mt-16">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/landing.svg"
+          alt="TheCueRoom landing illustration"
+          width={400}
+          height={300}
+          className="h-auto w-full"
+        />
+      </div>
     </section>
   );
 }
