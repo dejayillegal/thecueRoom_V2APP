@@ -38,9 +38,15 @@ export default function Footer() {
         Footer
       </h2>
       <div className="mx-auto flex max-w-[1200px] flex-col items-start justify-between gap-8 px-6 py-12 md:flex-row">
-        <p className="text-xs text-muted">
-          © TheCueRoom {new Date().getFullYear()} – All rights reserved.
-        </p>
+        <div className="max-w-xs">
+          <p className="text-sm italic text-purple">
+            Where music meets machine, and the underground stays pure.
+          </p>
+          <p className="mt-1 text-[10px] text-muted">No spam. Unsubscribe anytime.</p>
+          <p className="mt-4 text-xs text-muted">
+            © TheCueRoom {new Date().getFullYear()} – All rights reserved.
+          </p>
+        </div>
         <nav className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4">
           {columns.map((col) => (
             <div key={col.title}>

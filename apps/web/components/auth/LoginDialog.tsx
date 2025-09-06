@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getBrowserClient } from '@/lib/supabase-browser';
 
 export default function LoginDialog({
@@ -10,15 +10,34 @@ export default function LoginDialog({
   const supabase = getBrowserClient();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [resendReady, setResendReady] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  async function sendLink() {
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (error) setErr(error.message);
+    else {
+      setSent(true);
+      setResendReady(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    const { error } = await supabase.auth.signInWithOtp({ email });
-    if (error) setErr(error.message);
-    else setSent(true);
+    await sendLink();
   }
+
+  async function onResend() {
+    setErr(null);
+    await sendLink();
+  }
+
+  useEffect(() => {
+    if (!sent) return;
+    const id = setTimeout(() => setResendReady(true), 30000);
+    return () => clearTimeout(id);
+  }, [sent]);
 
   if (!open) return null;
   return (
@@ -35,9 +54,19 @@ export default function LoginDialog({
           </button>
         </div>
         {sent ? (
-          <p className="mt-4 text-zinc-300">
-            Magic link sent! Check your inbox on this device. Keep this tab open.
-          </p>
+          <div className="mt-4 text-zinc-300">
+            <p>
+              Magic link sent to {email}. Check your inbox at {email.split('@')[1]}.
+            </p>
+            {resendReady && (
+              <button
+                onClick={onResend}
+                className="mt-4 w-full rounded-lg bg-[var(--lime)] px-4 py-2 font-medium text-black hover:opacity-90"
+              >
+                Resend
+              </button>
+            )}
+          </div>
         ) : (
           <form onSubmit={onSubmit} className="mt-4 space-y-3">
             <label className="block text-sm text-zinc-300">
