@@ -36,7 +36,14 @@ export default function CommentList({ postId, initialComments = [] }: Props) {
       )
       .subscribe();
     return () => {
-      supabase!.removeChannel(channel);
+      try {
+        // Prefer channel API; present in Realtime
+        channel?.unsubscribe?.();
+        // Also call client API if available (real client in prod)
+        (supabase as any)?.removeChannel?.(channel);
+      } catch {
+        // no-op in tests/mocks
+      }
     };
   }, [postId]);
 
