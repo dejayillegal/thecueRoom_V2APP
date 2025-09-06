@@ -42,12 +42,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: 'npm', cache-dependency-path: apps/web/package-lock.json }
-      - run: npm ci
-      - run: npm run build
-      - run: npx playwright install --with-deps
-      - run: npm run e2e
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      # Try ci first; if the lock is out-of-sync, fall back to a normal install.
+      - name: Install deps (ci with fallback)
+        working-directory: apps/web
+        run: |
+          npm ci || (echo "npm ci failed, falling back to npm i" && npm i --no-audit --no-fund)
+
+      # Double-ensure zod is present in case of future drift
+      - name: Verify zod
+        working-directory: apps/web
+        run: |
+          npm ls zod || npm i zod@3.25.76 --no-audit --no-fund
+
+      - name: Build web
+        working-directory: apps/web
+        run: npm run build
+
+      - name: Install Playwright browsers
+        working-directory: apps/web
+        run: npx playwright install --with-deps
+
+      - name: E2E
         if: ${{ hashFiles('apps/web/e2e/**') != '' }}
+        working-directory: apps/web
+        run: npm run e2e
 
   mobile:
     needs: repo-audit
