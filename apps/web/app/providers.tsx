@@ -11,18 +11,22 @@ interface SessionContextValue {
 const SessionContext = createContext<SessionContextValue | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const supabase = getBrowserClient();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const client = getBrowserClient();
+    setSupabase(client);
+    client.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
+
+  if (!supabase) return null;
 
   return (
     <SessionContext.Provider value={{ supabase, session }}>

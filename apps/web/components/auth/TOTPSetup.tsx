@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from 'react';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { getBrowserClient } from '@/lib/supabase-browser';
 
 export default function TOTPSetup() {
-  const supabase = getBrowserClient();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [qr, setQr] = useState<string | null>(null);
   const [factorId, setFactorId] = useState<string | null>(null);
   const [code, setCode] = useState('');
@@ -11,6 +12,11 @@ export default function TOTPSetup() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setSupabase(getBrowserClient());
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
     (async () => {
       const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' });
       if (!error && data?.totp) {
@@ -21,7 +27,7 @@ export default function TOTPSetup() {
   }, [supabase]);
 
   const verify = async () => {
-    if (!factorId) return;
+    if (!supabase || !factorId) return;
     const { error } = await supabase.auth.mfa.verify({ factorId, code } as any);
     if (error) {
       setError(error.message);

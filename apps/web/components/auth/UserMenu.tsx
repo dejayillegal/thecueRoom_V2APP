@@ -1,19 +1,25 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { getBrowserClient } from '@/lib/supabase-browser';
 import { useSession } from '@/app/providers';
 
 export default function UserMenu() {
   const { session } = useSession();
-  const supabase = getBrowserClient();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setSupabase(getBrowserClient());
+  }, []);
 
   if (!session) return null;
   const avatar = session.user.user_metadata?.avatar_url as string | undefined;
   const role = session.user.app_metadata?.role as string | undefined;
 
   const signOut = async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
     location.href = '/login';
   };
