@@ -3,19 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --bg: #ffffff;
-  --background: #ffffff;
-  --surface: #f5f5f5;
-  --foreground: #000000;
-  --lime: #D1FF3D;
-  --purple: #873BBF;
-}
-
-.dark {
-  --bg: #0B0B0B;
-  --background: #0B0B0B;
+  --bg: #0b0b0b;
+  --background: #0b0b0b;
   --surface: #111111;
   --foreground: #ffffff;
+  --lime: #d1ff3d;
+  --purple: #873bbf;
 }
 
 @layer base {

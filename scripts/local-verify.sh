@@ -55,7 +55,8 @@ rule "Root install"
 install_here
 
 rule "Assemble assets"
-node scripts/assemble-assets.ts || true
+echo "  • Syncing marketing assets"
+node --import tsx scripts/assemble-assets.ts
 
 rule "Repo audit"
 npm run audit

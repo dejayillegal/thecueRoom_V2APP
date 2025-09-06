@@ -47,6 +47,11 @@ jobs:
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
 
+      - run: npm ci || npm i
+        working-directory: .
+      - run: npm run assemble:assets
+        working-directory: .
+
       # Try ci first; if the lock is out-of-sync, fall back to a normal install.
       - name: Install deps (ci with fallback)
         working-directory: apps/web
@@ -58,6 +63,10 @@ jobs:
         working-directory: apps/web
         run: |
           npm ls zod || npm i zod@3.25.76 --no-audit --no-fund
+
+      - name: Unit tests
+        working-directory: apps/web
+        run: npm test
 
       - name: Build web
         working-directory: apps/web

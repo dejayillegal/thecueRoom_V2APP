@@ -5,6 +5,9 @@
   "dependencies": {
     "zod": "3.23.8"
   },
+  "devDependencies": {
+    "tsx": "4.7.1"
+  },
   "scripts": {
     "lint:web": "npm run lint --prefix apps/web",
     "build:web": "npm run bootstrap:packages && npm run build --prefix apps/web",
@@ -21,6 +24,8 @@
     "audit:fix": "node scripts/repo-audit.mjs --fix",
     "scan:placeholders": "node scripts/no-placeholders.mjs",
     "verify:local": "bash ./scripts/local-verify.sh",
-    "bootstrap:packages": "npm --prefix packages/schemas ci --no-audit --no-fund || npm --prefix packages/schemas i --no-audit --no-fund"
+    "bootstrap:packages": "npm --prefix packages/schemas ci --no-audit --no-fund || npm --prefix packages/schemas i --no-audit --no-fund",
+    "assemble:assets": "node --import tsx scripts/assemble-assets.ts",
+    "test:web": "npm run -w apps/web test --silent"
   }
 }
