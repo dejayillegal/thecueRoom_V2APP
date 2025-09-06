@@ -9,10 +9,10 @@ describe('Landing', () => {
     const img = screen.getByAltText(/marketing landing/i) as HTMLImageElement;
     expect(img.src).toMatch(/\/thecueRoom_V2APP\/marketing\/MarketingLanding\.png$/);
   });
-
-  it('shows the exact logo file (not transformed)', () => {
+  it('renders the raw SVG logo inline', () => {
     render(<Landing />);
-    const logo = screen.getByAltText(/thecueRoom logo/i) as HTMLImageElement;
-    expect(logo.src).toMatch(/\/thecueRoom_V2APP\/brand\/logo\.svg$/);
+    const logo = screen.getByLabelText(/thecueRoom logo/i) as SVGElement;
+    expect(logo.tagName.toLowerCase()).toBe('svg');
+    expect(logo.querySelector('#blinkPath')).not.toBeNull();
   });
 });
