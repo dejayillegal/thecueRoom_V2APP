@@ -1,16 +1,22 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+let client: SupabaseClient | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase env vars missing');
+export function createMobileClient() {
+  const url = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+  const key =
+    process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+  return createClient(url, key, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  });
 }
 
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    detectSessionInUrl: false
-  }
-});
+export function getMobileClient() {
+  if (!client) client = createMobileClient();
+  return client;
+}
+
+export const supabase = getMobileClient();
 export type { SupabaseClient } from '@supabase/supabase-js';
+
