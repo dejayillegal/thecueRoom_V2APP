@@ -2,28 +2,36 @@ import Card from './Card';
 
 const features = [
   {
-    title: 'Curated Community',
-    body: 'Join a vetted network of underground artists and fans.',
+    title: 'AI Cover Art',
+    body: 'Ship on-brand covers from vibe + genre in under a minute. Full-res exports—yours to use.',
   },
   {
-    title: 'Real-Time Feed',
-    body: 'Stay updated with the latest drops and discussions.',
+    title: 'Meme Studio',
+    body: 'Turn moments (or an optional image) into shareable, on-brand memes that actually get reposted.',
   },
   {
-    title: 'Event Radar',
-    body: 'Discover gigs and meetups tailored to your taste.',
+    title: 'Artist Verification',
+    body: 'Vetted profiles and invite flow help you avoid fakes and spam. Look credible when you pitch.',
   },
   {
-    title: 'Collaborative Playlists',
-    body: 'Build and share mixes with the community.',
+    title: 'Private & Tiered Access',
+    body: 'Verified-first spaces, content flags, and mod tools keep the feed useful—and the culture clean.',
   },
   {
-    title: 'AI Tools',
-    body: 'Leverage machine learning to surface hidden gems.',
+    title: 'Curated News Rail',
+    body: 'Underground sources only. No SEO sludge. Scene-relevant drops for your region.',
   },
   {
-    title: 'Secure Profiles',
-    body: 'Own your identity with privacy-first accounts.',
+    title: 'Gig Radar',
+    body: 'Find and promote events. Filter by city/region and DM promoters who are open to pitches.',
+  },
+  {
+    title: 'Creator Dashboard',
+    body: 'One place for your EPK, stage plot, links, and posts. Share a single link that stays current.',
+  },
+  {
+    title: 'Invite-Only Community',
+    body: 'Built for serious techno/house creators. Fewer tourists, more people who actually ship.',
   },
 ];
 
