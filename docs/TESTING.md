@@ -41,3 +41,19 @@ Web E2E asserts no console.error on pages and checks key routes (/, /feed, /meme
 Jest uses jest-expo with mocks for Reanimated, RNGH, Screens, Safe Area, and Expo ESM modules.
 
 We soft-suppress the noisy “not wrapped in act” warning from async query polling; real errors still fail tests.
+
+## Quick local
+
+```bash
+npm i
+npm run audit || true
+
+# Web — SSR build & tests
+cd apps/web && npm i && npm run build && npm test && cd ../..
+
+# Web — static preview (GH Pages parity)
+./scripts/deploy-local-web.sh  # serves http://localhost:4173/<basePath>
+
+# Mobile
+cd apps/mobile && npm i && npm run align && npm test && cd ../..
+```
