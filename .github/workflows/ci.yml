@@ -20,6 +20,7 @@ jobs:
     needs: repo-audit
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: apps/web } }
+    # Use repository variables for public Supabase configuration
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -40,6 +41,7 @@ jobs:
     needs: repo-audit
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: apps/mobile } }
+    # Use repository variables for public Supabase configuration
     env:
       EXPO_PUBLIC_SUPABASE_URL: ${{ vars.EXPO_PUBLIC_SUPABASE_URL }}
       EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
