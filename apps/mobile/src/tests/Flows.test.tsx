@@ -11,8 +11,12 @@ jest.mock('../lib/session', () => ({
 
 jest.mock('../lib/supabase', () => ({
   supabase: {
-    auth: { onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })) },
+    auth: {
+      onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
+      getUser: jest.fn(async () => ({ data: { user: { id: '1' } } })),
+    },
     channel: jest.fn(() => ({ on: jest.fn().mockReturnValue({ subscribe: jest.fn() }) })),
+    removeChannel: jest.fn(),
   }
 }));
 

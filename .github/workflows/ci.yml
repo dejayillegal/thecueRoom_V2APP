@@ -12,13 +12,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20           # ⬅ no cache here (no root lockfile)
-      - name: Assemble large assets (optional)
-        run: node scripts/assemble-assets.ts || true
-      - name: Run repo auditor
-        run: node scripts/repo-audit.mjs
-      - name: Scan for placeholders
-        run: npm run scan:placeholders
+          node-version: 20
+          # Avoid lockfile requirement at repo root:
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            apps/mobile/package-lock.json
+      - run: node scripts/assemble-assets.ts || true
+      - run: npm run audit
+      - run: npm run scan:placeholders
+      - run: node scripts/check-next-routes.mjs
+
   packages:
     needs: repo-audit
     runs-on: ubuntu-latest
@@ -42,6 +46,7 @@ jobs:
           npm run -s typecheck || true
           npm run -s lint --if-present
           npm run -s test --if-present
+
   functions:
     needs: repo-audit
     runs-on: ubuntu-latest
@@ -57,16 +62,11 @@ jobs:
       - name: Unit tests (if present)
         working-directory: functions
         run: deno test || true
+
   web:
     needs: repo-audit
     runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: 'http://localhost'
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'anon'
-      NEXT_TELEMETRY_DISABLED: '1'
-    defaults:
-      run:
-        working-directory: apps/web
+    defaults: { run: { working-directory: apps/web } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -74,15 +74,17 @@ jobs:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: apps/web/package-lock.json
-      - name: Install shared schemas deps
-        working-directory: packages/schemas
-        run: npm ci || npm i
-      - run: npm ci || npm i
+      - run: npm ci
       - run: npm run lint --if-present
       - run: npm test --if-present
-      - run: npm run build --if-present
-      - run: npm run e2e --if-present
-        if: ${{ hashFiles('apps/web/playwright.config.ts') != '' }}
+      - run: npm run build
+      - run: npx playwright install --with-deps
+      - run: npm run e2e
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: 'http://localhost'
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'anon'
+          NEXT_TELEMETRY_DISABLED: '1'
+
   mobile:
     needs: repo-audit
     runs-on: ubuntu-latest

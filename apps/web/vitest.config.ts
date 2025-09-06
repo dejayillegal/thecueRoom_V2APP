@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    include: ['__tests__/**/*.spec.ts', '__tests__/**/*.spec.tsx'],
-    exclude: ['e2e/**']
-  }
+    include: ['__tests__/**/*.spec.tsx', 'tests/**/*.spec.tsx'],
+    exclude: ['e2e/**'],
+  },
 });

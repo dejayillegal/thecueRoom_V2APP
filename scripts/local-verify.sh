@@ -80,6 +80,14 @@ else
   warn "apps/web not found; skipping web steps"
 fi
 
+# after building web
+if [ -f "apps/web/playwright.config.ts" ]; then
+  echo "  • Installing Playwright browsers"
+  (cd apps/web && npx playwright install) || true
+  echo "  • Running web e2e"
+  (cd apps/web && npm run e2e || true)
+fi
+
 ### --- Mobile ---
 if [[ -d apps/mobile ]]; then
   echo
@@ -107,4 +115,3 @@ fi
 
 rule "All done"
 ok "Local verification finished successfully."
-

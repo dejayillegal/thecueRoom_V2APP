@@ -126,3 +126,26 @@ jest.mock(
   },
   { virtual: true }
 );
+
+// Optional: soften noisy "not wrapped in act(...)" during async query polling in tests
+const _origError = console.error;
+beforeAll(() => {
+  console.error = (...args: any[]) => {
+    const msg = String(args[0] ?? '');
+    if (/not wrapped in act/.test(msg)) return; // ignore only this warning
+    _origError(...args);
+  };
+});
+afterAll(() => {
+  console.error = _origError;
+});
+
+// Navigation minimal mock (if tests import @react-navigation/native directly)
+jest.mock('@react-navigation/native', () => {
+  const React = require('react');
+  return {
+    ...jest.requireActual('@react-navigation/native'),
+    useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
+    useRoute: () => ({ params: {} }),
+  };
+});
