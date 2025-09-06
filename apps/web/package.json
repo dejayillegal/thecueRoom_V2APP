@@ -8,7 +8,9 @@
     "test": "vitest run",
     "build": "next build",
     "start": "next start",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:ui": "PWDEBUG=1 playwright test",
+    "e2e:ci": "playwright test --reporter=line"
   },
   "dependencies": {
     "class-variance-authority": "0.7.0",

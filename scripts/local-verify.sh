@@ -80,10 +80,11 @@ else
   warn "apps/web not found; skipping web steps"
 fi
 
-# after building web
+# After web build step
 if [ -f "apps/web/playwright.config.ts" ]; then
-  echo "  • Installing Playwright browsers"
-  (cd apps/web && npx playwright install) || true
+  echo "  • Installing Playwright browsers (platform-aware)"
+  node scripts/playwright-install.mjs || true
+
   echo "  • Running web e2e"
   (cd apps/web && npm run e2e || true)
 fi
