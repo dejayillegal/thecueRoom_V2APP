@@ -7,5 +7,5 @@ test('header logo renders with exact svg + hero image loads', async ({ page }) =
 
   const img = page.locator('img[alt="TheCueRoom marketing landing"]');
   await expect(img).toBeVisible();
-  await expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth > 0)).resolves.toBeTruthy();
+  await expect(img.evaluate((el: HTMLImageElement) => el.naturalWidth > 0)).resolves.toBeTruthy();
 });
