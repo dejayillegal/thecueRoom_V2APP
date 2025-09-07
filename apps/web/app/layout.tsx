@@ -7,12 +7,10 @@ const inter = Inter({ subsets: ['latin'] });
 const sourceCode = Source_Code_Pro({ subsets: ['latin'], variable: '--font-mono' });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const base = process.env.NEXT_PUBLIC_BASE_PATH || '';
-  const callbackPath = `${base}/callback`;
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} ${sourceCode.variable} bg-[var(--bg)] text-white`}>
-        <AuthHashRouter callbackPath={callbackPath} />
+      <body className={`${inter.className} ${sourceCode.variable} bg-[#0B0B0B] text-white antialiased`}>
+        <AuthHashRouter />
         {children}
       </body>
     </html>

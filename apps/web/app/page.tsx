@@ -3,10 +3,9 @@
 import AuthHashHandler from '@/components/auth/AuthHashHandler';
 import Header from '@/components/Header';
 import { Suspense } from 'react';
+import { withBase } from '@/lib/basePath';
 
 export default function Landing() {
-  const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
-
   return (
     <main className="min-h-screen bg-[#0B0B0B] text-white">
       {/* magic-link parser */}
@@ -17,13 +16,13 @@ export default function Landing() {
       {/* Header */}
       <Header />
 
-      {/* EXACT marketing artwork as-is */}
+      {/* The illustration — path now safe on GH Pages */}
       <section className="mx-auto w-full max-w-[1280px] px-6 pb-16">
         <img
-          src={`${prefix}/marketing/MarketingLanding.png`}
+          src={withBase('/landing.svg')}
           alt="TheCueRoom marketing landing"
-          className="block h-auto w-full select-none"
-          draggable={false}
+          style={{ width: '100%', height: 'auto' }}
+          loading="eager"
         />
       </section>
     </main>
