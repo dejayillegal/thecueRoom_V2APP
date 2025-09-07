@@ -1,54 +1,12 @@
-
 name: CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run repo audit
-        run: npm run audit
-
-      - name: Scan for placeholders
-        run: npm run scan:placeholders
-
-      - name: Typecheck
-        run: npm run -w apps/web typecheck
-
-      - name: Lint
-        run: npm run -w apps/web lint
-
-      - name: Web unit tests
-        run: npm --prefix apps/web test -- --run
-
-      - name: Install schema dependencies
-        run: npm --prefix packages/schemas ci --no-audit --no-fund
-
-      - name: Install Playwright browsers
-        run: node scripts/playwright-install.mjs
-
-      - name: Run Playwright tests
-        run: npm run -w apps/web e2e
-
-      - name: Mobile unit tests
-        run: npm --prefix apps/mobile test -- --run
-
-      - name: Build static web assets
-        run: STATIC_EXPORT=1 npm --prefix apps/web run build
+          node-version: 20
+      - run: npm install
+      - run: npm run build

@@ -14,8 +14,16 @@ const config: Config = {
         surface: '#0E0E0E',
         border: '#1F1F1F',
         text: '#EDEDED',
+        lime: '#D1FF3D',
+        purple: '#7E49C3',
         'accent-lime': '#D1FF3D',
         'accent-purple': '#7E49C3',
+        background: '#0B0B0B',
+        foreground: '#EDEDED',
+      },
+      ringColor: {
+        DEFAULT: '#D1FF3D',
+        lime: '#D1FF3D',
       },
       borderRadius: {
         md: '8px',
