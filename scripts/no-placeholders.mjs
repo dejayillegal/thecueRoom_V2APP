@@ -42,7 +42,7 @@ function walk(dir) {
       const content = readFileSync(full, 'utf8');
       const lines = content.split(/\r?\n/);
       lines.forEach((line, idx) => {
-        if (line.match(/placeholder\s*=/i)) return;
+        if (line.match(/placeholder\s*=/i) || line.includes('placeholder:')) return;
         if (PATTERN.test(line)) offenders.push(`${rel}:${idx + 1}: ${line.trim()}`);
       });
     }
