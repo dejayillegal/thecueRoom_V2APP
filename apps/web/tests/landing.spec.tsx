@@ -10,7 +10,7 @@ describe('Landing', () => {
   });
   it('renders the raw SVG logo inline', () => {
     render(<Landing />);
-    const logo = screen.getByLabelText(/thecueRoom logo/i) as SVGElement;
+    const logo = screen.getByLabelText(/thecueRoom logo/i) as unknown as SVGElement;
     expect(logo.tagName.toLowerCase()).toBe('svg');
     expect(logo.querySelector('#blinkPath')).not.toBeNull();
   });
