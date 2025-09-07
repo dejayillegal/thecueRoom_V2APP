@@ -9,6 +9,7 @@
     "tsx": "4.7.1"
   },
   "scripts": {
+    "build": "npm run build:web",
     "lint:web": "npm run lint --prefix apps/web",
     "build:web": "npm run bootstrap:packages && npm run build --prefix apps/web",
     "lint:mobile": "npm run lint --prefix apps/mobile",
