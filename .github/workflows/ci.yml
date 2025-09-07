@@ -1,3 +1,4 @@
+
 name: CI
 
 on:
@@ -6,129 +7,48 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  repo-audit:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      # Create a lightweight lockfile so npm audit doesn't error (no scripts run)
-      - run: npm i --package-lock-only --ignore-scripts
-      # Soft audit (non-blocking). Real gating is the repo auditor below.
-      - run: npm audit --omit=dev || true
-      # Assemble assets if present; ignore if script is absent
-      - run: node scripts/assemble-assets.ts || true
-      # Run repo auditor (gating)
-      - run: npm run audit || true
-      # Optional: check Next route collisions if script exists
-      - run: node scripts/check-next-routes.mjs || true
 
-  web:
-    needs: repo-audit
-    runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/web } }
-    env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
-      NEXT_TELEMETRY_DISABLED: ${{ vars.NEXT_TELEMETRY_DISABLED }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          node-version: '20.x'
+          cache: 'npm'
 
-      - run: npm ci || npm i
-        working-directory: .
-      - run: npm run assemble:assets
-        working-directory: .
+      - name: Install dependencies
+        run: npm install
 
-      # Try ci first; if the lock is out-of-sync, fall back to a normal install.
-      - name: Install deps (ci with fallback)
-        working-directory: apps/web
-        run: |
-          npm ci || (echo "npm ci failed, falling back to npm i" && npm i --no-audit --no-fund)
+      - name: Run repo audit
+        run: npm run audit
 
-      # Double-ensure zod is present in case of future drift
-      - name: Verify zod
-        working-directory: apps/web
-        run: |
-          npm ls zod || npm i zod@3.25.76 --no-audit --no-fund
+      - name: Scan for placeholders
+        run: npm run scan:placeholders
 
-      - name: Unit tests
-        working-directory: apps/web
-        run: npm test
+      - name: Typecheck
+        run: npm run -w apps/web typecheck
 
-      - name: Build web
-        working-directory: apps/web
-        run: npm run build
+      - name: Lint
+        run: npm run -w apps/web lint
+
+      - name: Web unit tests
+        run: npm --prefix apps/web test -- --run
+
+      - name: Install schema dependencies
+        run: npm --prefix packages/schemas ci --no-audit --no-fund
 
       - name: Install Playwright browsers
-        working-directory: apps/web
-        run: npx playwright install --with-deps
+        run: node scripts/playwright-install.mjs
 
-      - name: E2E
-        if: ${{ hashFiles('apps/web/e2e/**') != '' }}
-        working-directory: apps/web
-        run: npm run e2e
+      - name: Run Playwright tests
+        run: npm run -w apps/web e2e
 
-  mobile:
-    needs: repo-audit
-    runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/mobile } }
-    env:
-      EXPO_PUBLIC_SUPABASE_URL: ${{ vars.EXPO_PUBLIC_SUPABASE_URL }}
-      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
-      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: 'npm', cache-dependency-path: apps/mobile/package-lock.json }
-      - run: npm ci
-      - run: node scripts/expo-dep-guard.mjs --ci || node scripts/expo-dep-guard.mjs --ci --fallback
-      - run: npm test --if-present
-      - run: npm run lint --if-present
+      - name: Mobile unit tests
+        run: npm --prefix apps/mobile test -- --run
 
-  # OPTIONAL: GitHub Pages static export (manual dispatch or on tag)
-  pages-build:
-    if: ${{ vars.NEXT_PUBLIC_BASE_PATH != '' }}
-    needs: web
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-    permissions:
-      pages: write
-      id-token: write
-    defaults: { run: { working-directory: apps/web } }
-    env:
-      STATIC_EXPORT: '1'
-      NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
-      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-      NEXT_TELEMETRY_DISABLED: ${{ vars.NEXT_TELEMETRY_DISABLED }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: 'npm', cache-dependency-path: apps/web/package-lock.json }
-      - run: npm ci
-      - run: npm run build:static
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: apps/web/out }
-
-  pages-deploy:
-    if: ${{ needs.pages-build.result == 'success' }}
-    needs: pages-build
-    runs-on: ubuntu-latest
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Build static web assets
+        run: STATIC_EXPORT=1 npm --prefix apps/web run build
