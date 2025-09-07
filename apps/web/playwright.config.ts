@@ -7,13 +7,13 @@ export default defineConfig({
   retries: 0,
   reporter: 'list',
   use: {
-    baseURL: process.env.PW_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PW_BASE_URL || 'http://127.0.0.1:3000',
     trace: 'retain-on-failure',
     viewport: { width: 1366, height: 900 },
   },
   webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:3000',
+    command: 'npm run start -- --hostname 127.0.0.1',
+    url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
