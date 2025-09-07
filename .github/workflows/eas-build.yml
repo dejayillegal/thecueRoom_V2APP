@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   eas:
+    if: ${{ secrets.EXPO_TOKEN != '' }}
     runs-on: ubuntu-latest
     defaults:
       run:
