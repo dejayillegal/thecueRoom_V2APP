@@ -1,12 +1,11 @@
 'use client';
 
 /**
- * IMPORTANT:
- * - Do not edit the SVG markup below.
- * - We inject it as raw HTML so attributes like `class` are preserved exactly.
+ * DO NOT edit RAW_LOGO_SVG — it is exactly what the user provided.
+ * We size the wrapper (not the SVG) so Tailwind purging can’t affect it.
  */
 const RAW_LOGO_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" aria-label="thecueRoom logo with anchored blink" role="img" class="h-6 w-auto">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" aria-label="thecueRoom logo with anchored blink" role="img">
   <style>
     #blinkPath { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 10s infinite; }
     @keyframes blink {
@@ -26,12 +25,13 @@ const RAW_LOGO_SVG = `
 </svg>
 `;
 
-export default function BrandLogo() {
+export default function BrandLogo({ height = 24 }: { height?: number }) {
   return (
     <span
-      aria-label="brand-logo-wrapper"
-      // preserve your SVG exactly as provided
+      className="brand-logo inline-flex items-center"
+      style={{ lineHeight: 0 }}
       dangerouslySetInnerHTML={{ __html: RAW_LOGO_SVG }}
+      aria-label="brand-logo-wrapper"
     />
   );
 }

@@ -1,16 +1,16 @@
 'use client';
 
 import { useEffect } from 'react';
+import { basePath } from '@/lib/basePath';
 
-export default function AuthHashRouter({ callbackPath }: { callbackPath: string }) {
+export default function AuthHashRouter() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const h = window.location.hash;
     if (h && h.includes('access_token')) {
-      const target = `${callbackPath}${h}`;
-      window.location.replace(target);
+      window.location.replace(`${basePath}/callback${h}`);
     }
-  }, [callbackPath]);
+  }, []);
   return null;
 }
 
