@@ -45,6 +45,7 @@ export default function TOTPSetup() {
   return (
     <div className="space-y-4">
       {qr && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={`data:image/png;base64,${qr}`} alt="TOTP QR" className="mx-auto" />
       )}
       <p className="text-sm text-white">Store your recovery codes safely.</p>
