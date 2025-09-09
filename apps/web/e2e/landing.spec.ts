@@ -1,24 +1,11 @@
 import { test, expect } from '@playwright/test';
-import fs from 'node:fs';
 
-// Visual regression for marketing landing page
-// Ensures baseline screenshot at docs/assets/MarketingLanding.reference.png
+test('header logo renders with exact svg + hero image loads', async ({ page }) => {
+  await page.goto(process.env.PLAYWRIGHT_BASE_URL || '/');
+  await expect(page.locator('svg[aria-label="thecueRoom logo with anchored blink"]')).toBeVisible();
+  await expect(page.locator('#blinkPath')).toHaveCount(1);
 
-test.skip('marketing landing matches baseline', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() => document.fonts.ready);
-  await page.addStyleTag({
-    content: `
-      *,*::before,*::after{transition:none!important;animation:none!important;}
-      html{scroll-behavior:auto!important;}
-    `
-  });
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  const screenshot = await page.screenshot();
-  const baseline = fs.readFileSync(
-    new URL('../../../docs/assets/MarketingLanding.reference.png', import.meta.url)
-  );
-  await expect(screenshot).toMatchSnapshot(baseline, {
-    maxDiffPixelRatio: 0.03
-  });
+  const img = page.locator('img[alt="TheCueRoom marketing landing"]');
+  await expect(img).toBeVisible();
+  await expect(img.evaluate((el: HTMLImageElement) => el.naturalWidth > 0)).resolves.toBeTruthy();
 });

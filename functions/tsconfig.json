@@ -8,6 +8,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "paths": {
       "@thecueroom/db": ["../packages/db/src"],
       "@thecueroom/schemas": ["../packages/schemas/src"],
@@ -15,5 +17,5 @@
     },
     "outDir": "dist"
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "**/*.d.ts"]
 }

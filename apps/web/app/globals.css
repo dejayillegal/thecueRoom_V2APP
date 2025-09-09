@@ -19,3 +19,13 @@
     @apply bg-[var(--bg)] text-white;
   }
 }
+
+/* Force exact sizing without touching the internal SVG markup */
+.brand-logo > svg {
+  display: block;
+  height: 24px; /* keep in sync with BrandLogo default */
+  width: auto;
+}
+@media (min-width: 1024px) {
+  .brand-logo > svg { height: 28px; } /* optional tweak for lg+ */
+}

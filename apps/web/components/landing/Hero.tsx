@@ -3,29 +3,29 @@
 import Link from 'next/link';
 import Bloom from './Bloom';
 
-export default function Hero() {
+export default function Hero({ onJoinClick }: { onJoinClick: () => void }) {
   return (
     <section className="relative mx-auto max-w-[1200px] px-6 py-24 text-center">
       <Bloom />
-      <h1 className="heading-1">Welcome to thecueRoom</h1>
+      <h1 className="heading-1">Book gigs. Look legit. Create faster.</h1>
       <p className="text-muted mx-auto mt-4 max-w-2xl">
-        Discover the next wave of underground music powered by community and tech.
+        An invite-only studio and community for underground techno & house artists. Generate release-ready art, get verified to avoid scams, and tap a vetted feed of gigs, news, and collaborators.
       </p>
       <p className="mt-2 italic text-purple">
         Where music meets machine, and the underground stays pure.
       </p>
       <div className="mt-8 flex items-center justify-center gap-4">
-        <Link
-          href="/signup"
-          className="flex h-11 items-center rounded bg-lime px-6 font-bold text-black"
+        <button
+          onClick={onJoinClick}
+          className="flex h-11 items-center rounded bg-lime px-6 font-bold text-black transition-transform hover:scale-105 hover:brightness-110"
         >
-          Join the Community
-        </Link>
+          Join Free — Get Magic Link
+        </button>
         <Link
-          href="#learn-more"
-          className="flex h-11 items-center rounded border border-lime px-6 font-bold text-lime"
+          href="#how-it-works"
+          className="flex h-11 items-center rounded border border-lime px-6 font-bold text-lime transition-transform hover:scale-105 hover:brightness-110"
         >
-          Learn More
+          See How It Works
         </Link>
       </div>
       <div className="mt-16">

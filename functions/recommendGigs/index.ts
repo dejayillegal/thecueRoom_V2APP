@@ -37,7 +37,7 @@ export async function handler(req: Request): Promise<Response> {
   if (!supabaseUrl || !supabaseKey) {
     return new Response("Missing env vars", { status: 500 });
   }
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase: any = createClient(supabaseUrl, supabaseKey);
   const { data: gigs } = await supabase.from("gigs").select();
   const { data: follows } = await supabase
     .from("follows")
@@ -50,8 +50,8 @@ export async function handler(req: Request): Promise<Response> {
 
   const recs = scoreGigs(
     gigs ?? [],
-    (follows ?? []).map((f) => f.artist_id),
-    (listens ?? []).map((l) => l.artist_id),
+    (follows ?? []).map((f: { artist_id: number }) => f.artist_id),
+    (listens ?? []).map((l: { artist_id: number }) => l.artist_id),
     city,
   );
   return new Response(JSON.stringify({ recommendations: recs }), {

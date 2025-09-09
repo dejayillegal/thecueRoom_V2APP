@@ -2,7 +2,7 @@ import { assertEquals } from "std/testing/asserts.ts";
 import { parseRss } from "./index.ts";
 
 Deno.test("parseRss dedupes and limits", () => {
-  const itemsXml = Array.from({ length: 12 }, (_ , i) =>
+  const itemsXml = Array.from({ length: 12 }, (_: unknown, i: number) =>
     `<item><title>${i}</title><link>u${i}</link><description>d</description><pubDate>2024-01-01</pubDate></item>`
   ).join("");
   const xml = `<rss><channel>${itemsXml}</channel></rss>`;

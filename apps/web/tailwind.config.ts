@@ -10,15 +10,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#0B0B0B',
-        surface: '#111111',
-        foreground: '#FFFFFF',
+        bg: '#0B0B0B',
+        surface: '#0E0E0E',
+        border: '#1F1F1F',
+        text: '#EDEDED',
         lime: '#D1FF3D',
-        purple: '#873BBF',
+        purple: '#7E49C3',
+        'accent-lime': '#D1FF3D',
+        'accent-purple': '#7E49C3',
+        background: '#0B0B0B',
+        foreground: '#EDEDED',
+      },
+      ringColor: {
+        DEFAULT: '#D1FF3D',
+        lime: '#D1FF3D',
+      },
+      borderRadius: {
+        md: '8px',
+        lg: '10px',
+        xl: '12px',
+      },
+      boxShadow: {
+        'soft-neutral': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'heavy-spread': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"Source Code Pro"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
+    },
+    container: {
+      center: true,
+      screens: {
+        '2xl': '1120px',
       },
     },
   },

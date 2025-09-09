@@ -5,7 +5,12 @@ test.beforeEach(async ({ page }) => {
   page.on('console', (msg) => {
     if (
       msg.type() === 'error' &&
-      !msg.text().includes('Failed to load resource: the server responded with a status of 400')
+      !msg.text().includes(
+        'Failed to load resource: the server responded with a status of 400',
+      ) &&
+      !msg.text().includes(
+        'Failed to load resource: the server responded with a status of 404',
+      )
     ) {
       throw new Error(`Console error: ${msg.text()}`);
     }

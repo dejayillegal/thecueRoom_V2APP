@@ -1,0 +1,379 @@
+📌 North-star goals (what “done” looks like)
+
+UX: pixel-perfect landing (matches your screenshot), auth as modal, zero broken logo, consistent design system across web & mobile.
+
+Security: least-privilege RLS, MFA, content validation (Zod), safe auth flow (no hash-token leaks), signed storage, hard CSP (where possible), dependency & SCA gates.
+
+Performance: Core Web Vitals ≥ 90 on desktop & mobile, TTI ≤ 3.0s on mid-tier, JS bundle budget enforced.
+
+Accessibility: WCAG 2.2 AA automated + manual checks; a11y unit tests gate PRs.
+
+Testing: unit + integration + visual + E2E (+ a11y and perf smoke). Playwright traces uploaded on every CI run.
+
+Ops: CI/CD that audits, tests, builds, deploys web to Pages, kicks EAS builds, deploys Edge Functions; versioned DB with reversible migrations.
+
+Observability: error tracking, analytics, and SLO dashboards.
+
+Docs: single source of truth with “golden path” setup.
+
+Below is everything to reach that.
+
+1) Planning & Design → repo-concrete actions
+1.1 Component system + tokens
+
+Create packages/ui/design-tokens.css (or Tailwind config if you’re already using it) with brand colors, spacing, radii, shadows that match your landing.
+
+Extract shared primitives: Button, Card, Modal, Input, Tabs, Badge, Tooltip.
+
+1.2 Landing page pixel lock
+
+Freeze the landing: visual snapshot via Playwright.
+
+File: apps/web/e2e/landing.visual.spec.ts with expect(page).toHaveScreenshot('landing.png', { maxDiffPixels: 0 }).
+
+Keep your inline SVG logo (exact code you provided) in apps/web/components/BrandLogo.tsx.
+
+Enforce no mutations by adding a unit test BrandLogo.spec.tsx that string-matches the <svg> (no transforms, no size changes).
+
+1.3 Auth UX (modal)
+
+Move /login route logic into a client modal that can be opened from any page.
+
+Files to add:
+
+apps/web/components/auth/AuthModal.tsx (tabs: Sign in / Sign up / Forgot)
+
+apps/web/components/auth/CodeModal.tsx (6-digit verification)
+
+Open with query (?auth=1) or a state atom.
+
+2) Development Standards (clean code, security, performance, accessibility)
+2.1 Linting & style
+
+ESLint strict + TypeScript strict + Prettier:
+
+tsconfig.json: "strict": true, "noUncheckedIndexedAccess": true, "exactOptionalPropertyTypes": true
+
+.eslintrc.cjs add: @typescript-eslint/no-floating-promises, no-restricted-syntax for any, ban-types, import/no-default-export for new files (App Router friendly).
+
+Commit hooks with lint-staged + prettier + typecheck (only staged files).
+
+2.2 Runtime validation (Zod)
+
+Enforce Zod for:
+
+all public APIs (Edge Functions handlers),
+
+form submits,
+
+query/hash parsing,
+
+environment variables.
+
+Files:
+
+packages/schemas/src/env.ts (zod-safe process.env for both web/mobile build-time)
+
+apps/web/lib/schemas.ts (form schemas: sign-in, sign-up, profile, links, genres)
+
+2.3 Security hardening
+
+Supabase RLS (row-level security):
+
+Profiles table: only auth.uid() = id can read/write self; admin role can update approval_status.
+
+Logs table (if any): insert only via Edge Functions with service_role.
+
+Edge Function verifyArtist: you already asked; keep it as source of truth flipping approval_status after heuristics (domain allow-list, presence, follower thresholds).
+
+Auth tokens:
+
+Do not use #access_token URL fragments as state in app; process once (hash catcher) → exchange/store session in Supabase client → immediately strip hash with history.replaceState.
+
+CSP:
+
+GitHub Pages can’t set headers; ship <meta http-equiv="Content-Security-Policy" ...> in apps/web/app/(marketing)/layout.tsx:
+
+default-src 'self';
+script-src 'self' 'wasm-unsafe-eval' 'nonce-__NONCE__';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data:;
+connect-src 'self' https://*.supabase.co https://*.ingest.*; 
+frame-ancestors 'none';
+base-uri 'self';
+form-action 'self';
+
+
+Generate a per-request nonce in a [server component layout] and inject into inline script tags only where needed.
+
+Dependency security:
+
+Add GitHub Dependency Review & CodeQL and npm audit gates to CI.
+
+Mobile security:
+
+Disable screenshot for sensitive screens (Android FLAG_SECURE, iOS UIProtectedData for code view).
+
+Use Expo’s SecureStore for tokens.
+
+HTTPS pinning (optional; at least add fetch retry + domain allow-list).
+
+2.4 Performance budgets
+
+bundle-buddy or @bundle-stats/cli to fail PRs if > 170kB of first-load JS (after gzip) for landing route.
+
+Add Lighthouse CI minimal smoke (not full blocking) on pages:
+
+/, /feed, /playlists target scores: PWA ≥ 80, Perf ≥ 90, A11y ≥ 95, SEO ≥ 95.
+
+Turn on Next.js static export already set; use next/image only with unoptimized flag or inline img—you already got the lint warnings; ignore for Pages if you keep img.
+
+2.5 Accessibility
+
+Add @axe-core/playwright pass on the landing and auth modal.
+
+Color contrast tokens fixed to WCAG AA (your neon matches; verify).
+
+Keyboard traps: test modal focus loop; Esc to close; aria-* labels on controls.
+
+3) Testing (deep & gated)
+3.1 Unit (Vitest/Jest)
+
+Web:
+
+BrandLogo.spec.tsx (exact SVG match)
+
+AuthModal.spec.tsx (tab switching, form schema)
+
+FeedCard/ReactionBar/CommentList (you already added)
+
+Mobile:
+
+Navigation mocks stable; Supabase client mocked; flows for onboarding (Profile → Genres → Links → Preferences)
+
+3.2 Integration
+
+Web forms → Zod → mock Supabase: submit success/failure, error texts.
+
+3.3 E2E (Playwright)
+
+Gates you already started:
+
+console error gating (fail on console.error)
+
+duplicate routes check (your script)
+
+route coverage (visit all public routes)
+
+landing visual snapshot (0px diff)
+
+auth modal happy path (open → sign up → code entry → shows “pending approval” state)
+
+hash catcher test (simulate magic link; URL cleaned)
+
+3.4 A11y & Perf smoke
+
+axe pass must be 0 violations on / and ?auth=1.
+
+Lighthouse CLI smoke (not a heavy audit) to prevent regressions.
+
+3.5 Artifacts
+
+Always upload:
+
+Playwright HTML report + traces,
+
+Lighthouse JSON,
+
+visual diffs when failing.
+
+4) Deployment & Maintenance (CI/CD ready)
+
+You already have solid CI. Below is the extended stack with security scans, coverage, a11y, perf smoke, and EAS mobile. Keep the Pages deploy split (CI → Deploy) to respect env protections.
+
+4.1 Add these workflows
+
+a) Static analysis (dependency review + CodeQL)
+.github/workflows/security.yml
+
+name: Security
+on: [pull_request, push]
+permissions: { contents: read, security-events: write }
+jobs:
+  dep-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+  codeql:
+    uses: github/codeql-action/.github/workflows/codeql.yml@v3
+    permissions:
+      security-events: write
+      contents: read
+
+
+b) CI verify (keep the one I gave earlier) — add Lighthouse & axe:
+
+After web build:
+
+      - name: Start static server
+        working-directory: apps/web/out
+        run: npx http-server -p 4173 -c-1 &
+      - name: Lighthouse smoke
+        run: npx @lhci/cli autorun --collect.url=http://localhost:4173${{ vars.NEXT_PUBLIC_BASE_PATH }} --assert.preset=lighthouse:no-pwa
+      - name: A11y (axe) on landing
+        working-directory: apps/web
+        run: node ../..//scripts/run-axe-smoke.cjs
+
+
+Add a tiny helper scripts/run-axe-smoke.cjs that loads / and ?auth=1 with Playwright + axe.
+
+c) Deploy Pages (keep as sent).
+d) EAS builds (keep as sent).
+e) Supabase functions (optional; keep as sent).
+
+4.2 Monitoring & analytics
+
+Error tracking:
+
+Web: Sentry browser SDK (respect DNT) — initialize only in production; capture console errors in Playwright too.
+
+Mobile: Sentry React Native (Expo plugin).
+
+Product analytics:
+
+Web: Plausible or PostHog (self-host friendly). GDPR-safe; add cookie-less mode and consent banner.
+
+Mobile: Expo Updates + EAS OTA; PostHog RN.
+
+4.3 Docs (single source of truth)
+
+Create/update:
+
+docs/TESTING.md (you added—extend with a11y & perf)
+
+docs/SECURITY.md
+
+RLS policies, allowed domains, token handling, CSP, secrets layout, rotation.
+
+docs/ARCHITECTURE.md
+
+Diagrams: Web (Next static), Mobile (Expo), Supabase (DB/RLS + Functions), Queue (if added later).
+
+docs/RELEASES.md
+
+Semantic versioning; web deploys (Pages), mobile tags (mobile-v*), function versions.
+
+docs/ONBOARDING.md
+
+15-minute setup path (node, pnpm/npm, Supabase, envs), npm run verify:local.
+
+5) Mobile (Expo) specifics
+
+Navigation: stack for onboarding modal; bottom tabs for core; modal for auth. Ensure safe-area, large titles iOS, Material You on Android where sensible.
+
+Deep links: exp:// for dev; thecueroom://callback for prod; handle email verification & password reset intents.
+
+OTA updates: Enable EAS Update with channel: production; gate risky feature flags via remote config (e.g., Supabase remote_flags table).
+
+ASO basics: name ≤ 30 chars; subtitle; 5 screenshots each platform; privacy nutrition; in-app events later.
+
+6) SEO & Growth (web)
+
+Metadata: generateMetadata with canonical, OpenGraph, Twitter, manifest.
+
+Critical CSS: your landing is static—inline above-the-fold hero gradient; keep rest cached.
+
+Sitemap: static sitemap.xml in public/, robots.txt tailored for Pages base path.
+
+PWA: web manifest with icons; service worker only if you need offline (Pages + Workbox via static file).
+
+7) Privacy by Design (GDPR/CCPA)
+
+Consent: show a minimal banner when analytics enabled; store only anonymous events by default.
+
+Data rights: profile page exposes export (Edge function → CSV/JSON) and delete account (soft-delete + revoke sessions).
+
+MFA: optional TOTP. Respect reduced motion and prefers-color-scheme (yours is dark; keep contrast AA).
+
+8) Concrete file adds/edits (quick list)
+
+apps/web/components/BrandLogo.tsx → exact SVG (yours) + size locked via CSS h-6 w-auto md:h-7.
+
+apps/web/components/auth/{AuthModal,CodeModal}.tsx → modal flow.
+
+apps/web/app/(marketing)/layout.tsx → meta CSP with nonce; inject nonce to any inline scripts.
+
+apps/web/e2e/landing.visual.spec.ts → pixel snapshot gate.
+
+apps/web/e2e/auth.modal.spec.ts → open → submit → pending approval state.
+
+scripts/run-axe-smoke.cjs → a11y smoke.
+
+packages/schemas/src/env.ts and apps/web/lib/schemas.ts → zod.
+
+supabase/policies.sql → RLS (profiles, links).
+
+functions/verifyArtist/index.ts → your approval logic (already drafted previously).
+
+.github/workflows/{ci.yml,deploy-pages.yml,eas-build.yml,security.yml,supabase-functions.yml} → as above.
+
+9) Acceptance checklist (must pass before release)
+
+Visual
+
+ Landing page pixel-perfect vs snapshot (0 diff).
+
+ Logo SVG matches canonical string test.
+
+ Auth modal matches provided mock (tabs, help panel).
+
+Functional
+
+ Sign up (email+password) → submit social/profile URLs → auto-approve if heuristics pass else pending with admin notification.
+
+ Magic link + hash catcher → URL cleaned; session established.
+
+ Mobile onboarding: Profile → Genres → Links → Preferences (works offline for local state; sync on submit).
+
+Security
+
+ RLS: only owner reads/writes profile; admin flips approval.
+
+ No 3rd-party script without allow-list; CSP meta present.
+
+ Dependencies have no high/critical vulns.
+
+Performance
+
+ Lighthouse: Perf ≥ 90; FCP ≤ 1.8s; TTI ≤ 3.0s; bundle ≤ 170kB first-load.
+
+ Images optimized; no layout shift > 0.05 CLS.
+
+Accessibility
+
+ Axe: 0 violations on / and ?auth=1.
+
+ Keyboard-only flows; visible focus; aria-live for status.
+
+Ops
+
+ CI green: unit, integration, E2E, a11y, perf smoke.
+
+ Pages deploy from github-pages environment.
+
+ EAS build produces installable artifacts.
+
+ Error tracking and analytics receiving events (with consent).
+
+10) “Do this next” (short, high-impact)
+
+Lock the logo file & test (prevents future regressions).
+
+Ship the auth modal exactly like your screenshots; keep legacy /login route only to open modal & 301 to /.
+
+Install the four workflows above (CI verify, deploy, EAS, security).
+
+Add RLS + verifyArtist Edge Function and wire the client to show Pending Approval status.
+
+Add landing visual snapshot + axe smoke to E2E.

@@ -3,14 +3,17 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "axe-playwright": "^2.1.0",
+    "playwright": "^1.55.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "tsx": "4.7.1"
   },
   "scripts": {
+    "build": "npm run build:web",
     "lint:web": "npm run lint --prefix apps/web",
-    "build:web": "npm run bootstrap:packages && npm run build --prefix apps/web",
+    "build:web": "npm run bootstrap:packages && (npm --prefix apps/web ci --no-audit --no-fund || npm --prefix apps/web i --no-audit --no-fund) && npm run build --prefix apps/web",
     "lint:mobile": "npm run lint --prefix apps/mobile",
     "test:mobile": "npm run test --prefix apps/mobile",
     "lint:schemas": "npx -y -p typescript@5.4.5 tsc -p packages/schemas/tsconfig.json",
