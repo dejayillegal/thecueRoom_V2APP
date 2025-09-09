@@ -55,7 +55,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-white mb-2">Something went wrong</h1>
               <p className="text-neutral-400 text-sm">
-                We've encountered an unexpected error. This has been logged and our team will investigate.
+                We&apos;ve encountered an unexpected error. This has been logged and our team will investigate.
               </p>
             </div>
             

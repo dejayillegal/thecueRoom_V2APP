@@ -214,7 +214,7 @@ export default function CodeModal({ open, onClose, email, onVerifySuccess }: Cod
                     Resend
                   </button>
                 ) : (
-                  <span>Didn't get it?</span>
+                  <span>Didn&apos;t get it?</span>
                 )}
               </div>
 
