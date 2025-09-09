@@ -35,6 +35,14 @@ export default function Landing() {
             Learn More
           </button>
         </div>
+        <div className="mt-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/landing.svg`}
+            alt="TheCueRoom marketing landing"
+            className="h-auto w-full"
+          />
+        </div>
       </section>
 
       {/* What you get */}

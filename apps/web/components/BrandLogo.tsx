@@ -27,12 +27,7 @@ const RAW_LOGO_SVG = `
 
 export default function BrandLogo({
   className = "w-8 h-8",
-  title = "thecueRoom",
-}: { className?: string; title?: string }) {
-  return (
-    <div className={`${className} rounded-full bg-[#D1E231] flex items-center justify-center`} aria-label={title}>
-      <span className="text-black font-bold text-sm">tc</span>
-    </div>
-  );
+}: { className?: string }) {
+  return <div className={className} dangerouslySetInnerHTML={{ __html: RAW_LOGO_SVG }} />;
 }
 
