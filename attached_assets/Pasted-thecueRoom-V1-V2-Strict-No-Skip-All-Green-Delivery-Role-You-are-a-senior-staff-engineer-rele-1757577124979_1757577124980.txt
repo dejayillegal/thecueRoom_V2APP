@@ -1,0 +1,252 @@
+thecueRoom V1+V2 — Strict, No-Skip, All-Green Delivery
+
+Role: You are a senior staff engineer + release manager. Implement and verify every requirement for thecueRoom across web, mobile, backend, and CI. You must not skip, stub, or defer anything. If you encounter ambiguity, choose the safest, production-grade default and proceed. Do not mark complete until all acceptance tests pass.
+
+Product Context (non-negotiables)
+
+App: thecueRoom — closed underground techno/house artist community (Bangalore-first).
+
+Platforms: Next.js web, Expo React Native mobile, Supabase backend (Edge Functions), shared packages (Drizzle ORM + Zod).
+
+Canonical logo: logo.svg with anchored blink. Use this single file everywhere; no copies or modifications.
+
+Culture: No mainstream/self-promo. Strict moderation (AI + human). Fun + knowledge sharing.
+
+Absolute Objectives (must ALL be met)
+
+V1 IMPLEMENTATION
+
+Auth & Roles: Email + WebAuthn/passkeys. Roles: artist, moderator, admin. Artist verification flow (AI score + human approval) as a state machine.
+
+Profiles: Artist bio, socials, genres, Gig Radar (Bangalore) on profile; block multiple accounts for same artist.
+
+Community Feed: Posts, comments, reactions; moderation queue enforcing rules. No demo/placeholder content.
+
+Curated News: RSS ingest → normalize → dedupe → tag to techno/house categories only.
+
+Creative Tab: AI meme tool (client templates + captions), cover-art generator (on-device first; optional server job hook).
+
+Playlists: Weekly Spotify techno/house playlists (embed + metadata sync).
+
+Admin Console: Approve/ban artists, feature content, edit feeds/sources/playlists/gigs. All actions logged.
+
+V2 IMPLEMENTATION
+
+Personalized Newsletter: Weekly digest by interest (per-user newsletter_prefs).
+
+Advanced Moderation: Toxicity/NSFW/spam scoring; auto-flag thresholds + human review.
+
+Gig Radar++: Filters (date/venue), dedupe sources, ICS export.
+
+Performance: Code-split, image/font optimization, bundle analyze (web), Hermes + inlineRequires (mobile).
+
+Observability: Structured logs, trace IDs for Edge Functions, error reporting, audit trails.
+
+CLEANUP & MODERNIZATION
+
+Remove ugly/false/random code, dead assets, duplicate PNG/SVGs. Replace <img> with framework components (next/image, RN SVG).
+
+Strict TS everywhere. ESLint (typescript-eslint, import, jsx-a11y, react-hooks). Prettier. Conventional commits.
+
+One logo.svg reference path. Delete all duplicates.
+
+CI: ALWAYS GREEN
+
+pnpm monorepo, Node 20.x. Single pnpm-lock.yaml. Jobs: install → typecheck → lint → unit tests → (auto) Playwright e2e if config exists → Next.js build.
+
+Provide safe CI env defaults. Fail only if a true secret is required and documented.
+
+DOCS & ARTIFACTS
+
+Human-readable CHANGELOG.
+
+Bundle reports (apps/web), deleted files report, runbooks (Admin, Edge Functions, Moderation), and coverage summary.
+
+Monorepo Layout (create or normalize)
+apps/
+  web/        # Next.js 15 (app router), Tailwind, RSC where suitable
+  mobile/     # Expo RN, Hermes, react-native-svg
+packages/
+  db/         # Drizzle ORM schemas + migrations (Postgres)
+  types/      # Zod schemas + inferred TS
+  ui/         # shared components (headless + shadcn)
+  utils/      # pure functions, feature services
+supabase/
+  functions/  # ingestNews, newsletterWeekly, moderationGuard, gigSyncBlr, artistVerify
+  seed/
+.github/workflows/ci.yml
+scripts/
+
+Data Model (Drizzle)
+
+Entities: users, artists, profiles, gigs, posts, comments, reactions, news_items, playlists, tracks, verifications, moderation_flags, newsletter_prefs, audit_logs.
+
+Enforce relations, indexes where needed.
+
+Provide Zod schemas mirroring DB types.
+
+Edge Functions (must ship, tested)
+
+ingestNews: RSS → normalize → dedupe (title+source+hash) → tags.
+
+newsletterWeekly: segment by newsletter_prefs → render HTML → send (provider stub with interface + real adapter switch).
+
+moderationGuard: score toxicity/NSFW; flag above threshold; write moderation_flags.
+
+gigSyncBlr: ingest Bangalore gig sources; normalize; dedupe; index by date/venue; expose ICS.
+
+artistVerify: webhook to persist AI score + human decision transitions.
+
+Web (Next.js)
+
+Routes: /, /feed, /creative, /news, /playlists, /gigs, /profile/[handle], /admin.
+
+Use next/image and only public/logo.svg.
+
+TanStack Query for client mutations; RSC for server data where stable.
+
+A11y: focus, aria, keyboard nav, contrast.
+
+Mobile (Expo)
+
+Stacks: Feed, Creative, News, Playlists, Gigs, Profile.
+
+react-native-svg → consume single logo.svg mapping.
+
+Hermes + inlineRequires. Minimal polyfills.
+
+Coding Standards (enforce)
+
+TS strict everywhere: noUncheckedIndexedAccess, exactOptionalPropertyTypes, useUnknownInCatchVariables, verbatimModuleSyntax.
+
+ESLint: @typescript-eslint, import, jsx-a11y, react-hooks, unused-imports.
+
+Prettier: consistent formatting.
+
+Named exports > default, pure utils in packages/utils, side-effect free.
+
+No magic numbers; use config/constants.
+
+Tests for utilities and critical flows (auth, moderation, ingestion).
+
+CI Workflow (create/verify .github/workflows/ci.yml)
+
+Node 20.x, pnpm@9, cache, single lockfile.
+
+Steps: pnpm install --frozen-lockfile → pnpm typecheck → pnpm lint → pnpm test → (if Playwright config exists) run e2e → pnpm --filter ./apps/web run build.
+
+Upload bundle/analyzer artifacts.
+
+Fail on ESLint warnings (treat as errors).
+
+Cleanup Automation
+
+Add scripts/find-unused.js to detect unused files/assets; fail CI if any remain after you confirm.
+
+Run depcheck; remove unused deps (strict).
+
+Delete duplicate logos and non-used images; replace all references with canonical logo.svg.
+
+Acceptance Tests (HARD GATES — do not mark complete if any fail)
+
+Build gates
+
+pnpm typecheck = 0 errors.
+
+pnpm lint = 0 errors/warnings.
+
+pnpm test passes; coverage ≥ 80% apps, 90% packages (configurable via type-coverage + Vitest).
+
+pnpm --filter ./apps/web run build succeeds.
+
+CI green on PR against develop or main.
+
+Feature gates (manual + automated checks)
+
+Auth: email + WebAuthn works; roles enforced with server guards; verification state machine transitions tested.
+
+Feed: create/read/comment/react; moderated items appear in queue; rules enforced by tests.
+
+News: RSS ingest writes deduped items with categories; UI lists only techno/house.
+
+Creative: meme generator renders and exports; cover-art tool generates asset; basic tests validate core logic.
+
+Playlists: weekly sync job writes metadata; UI shows embeds.
+
+Gigs: BLR sources ingested; filters work; ICS downloads valid (parse check).
+
+Newsletter: job renders segmented HTML; dry-run sends via provider mock; logs/audits recorded.
+
+Observability: structured logs & trace IDs present in functions; admin actions audited.
+
+Cleanup gates
+
+scripts/find-unused.js reports no unused files.
+
+depcheck reports no unused deps.
+
+Repo contains one logo.svg; all references resolve.
+
+Docs gates
+
+CHANGELOG, Admin runbook, Edge Function runbook, Moderation policy, Coverage & Bundle reports committed.
+
+Command & Commit Plan (the bot must follow)
+
+Create branch release/v1-v2-full.
+
+Scaffold/normalize monorepo + tooling (pnpm, TS strict, ESLint, Prettier, commitlint).
+
+Implement DB/Zod + migrations + seeds.
+
+Implement Auth/roles/verification.
+
+Implement Feed + moderation queue.
+
+Implement News ingestion + UI.
+
+Implement Creative (meme + cover-art).
+
+Implement Playlists.
+
+Implement Gig Radar BLR + filters + ICS.
+
+Implement Newsletter weekly.
+
+Observability & audit logs.
+
+Cleanup (unused files/deps, canonical logo).
+
+CI workflow & fixes until all green.
+
+Docs + reports.
+
+Open PR with a detailed summary, feature matrix checklist, links to CI runs & artifacts.
+
+Commit naming: Conventional Commits with clear scopes (e.g., feat(auth): webauthn + role guards, chore(ci): add pnpm workflow, refactor(assets): canonicalize logo.svg).
+
+Guardrails
+
+Do not alter or hardcode secrets; add .env.example and apps/web/.env.ci safe defaults.
+
+No breaking DB/API without migrations + test updates + docs.
+
+A11y and performance must not regress across commits (compare analyzer outputs).
+
+Final Output (required to mark complete)
+
+Link to PR (or branch) with:
+
+✅ CI green
+
+✅ Feature checklist (V1 + V2) checked off with pointers to code/tests
+
+✅ Bundle report paths
+
+✅ Deleted files/deps reports
+
+✅ Coverage summary
+
+✅ Runbooks and policies
+
+Do not mark this task complete until every acceptance test and gate above is satisfied. If any gate fails: fix, re-run, and update the PR. No TODOs or placeholders allowed.

@@ -1,0 +1,224 @@
+thecueRoom V1 + V2 Full Implementation (Web + Mobile + Backend, Zero-Error Build)
+
+Context & Non-negotiables
+
+Product: thecueRoom — closed, artist/DJ-only underground techno/house community (Bangalore-first), strict moderation, no mainstream/self-promo.
+
+Platforms: Web (Next.js), Mobile (Expo React Native), Backend (Supabase + Edge Functions), Shared packages (Drizzle ORM/Zod).
+
+Canonical logo file is logo.svg with anchored blink. Use this file verbatim; no duplicates or geometry changes.
+
+Admin: full control to edit any content anytime; RA-inspired minimal dark UI.
+
+Build: zero TypeScript/ESLint errors, strict typing, tests pass, CI green.
+
+Objectives (must ALL be achieved)
+
+Implement V1 features (MVP):
+
+Auth & Roles: email + passkey (WebAuthn); roles artist, moderator, admin. Mandatory artist verification (AI + human).
+
+Profiles: artist bio, socials, genres, Gig Radar (Bangalore) on profile; single account per artist (enforce).
+
+Community Feed: posts, comments, reactions (no self-promo), moderation queue, content rules.
+
+Curated News: RSS ingestion → dedupe → category tags (techno/house only).
+
+Creative Tab: AI meme tool (on-device templates + text), AI cover-art generator (client-side first; server job optional).
+
+Playlists: weekly Spotify techno/house playlists (read-only embed + metadata sync).
+
+Admin Console: edit content, approve artists, ban, feature, manage news sources, playlist links, gig entries.
+
+Implement V2 features (enhancements):
+
+Personalized newsletter (weekly) for artists/DJs with global underground news by interest.
+
+Advanced moderation: toxicity, spam, NSFW filters; auto-flag + human review.
+
+Gig Radar improvements: filters (date/venue), deduped sources, ICS export.
+
+Performance: image optimization, code-splitting, bundle analysis, RN Hermes.
+
+Observability: audit logs, request tracing for Edge Functions, error reporting.
+
+Deliver green CI with pnpm monorepo, typecheck, lint, unit tests, optional Playwright/Detox, Next.js build.
+
+Deliver cleanup: remove random/ugly/duplicate code & assets; all references use the canonical logo.svg.
+
+Produce a single PR with human-readable changelog, bundle reports, and docs (runbooks).
+
+Tech & Repo Layout
+
+Monorepo (pnpm)
+
+apps/
+  web/        # Next.js 15, RSC, app router, Tailwind
+  mobile/     # Expo RN, Hermes, react-native-svg
+packages/
+  db/         # Drizzle ORM schemas + migrations (Postgres)
+  types/      # Zod schemas + inferred TS types
+  ui/         # shared headless + shadcn components
+  utils/      # pure functions, feature services
+supabase/
+  functions/  # Edge Functions (ingestNews, newsletter, moderation, gigs)
+  seed/
+.github/workflows/ci.yml
+scripts/
+
+
+Standards: TS strict everywhere, ESLint (typescript-eslint, import, jsx-a11y, react-hooks), Prettier, commitlint (conventional).
+
+Security: RLS policies, row-level checks by role, rate-limits, input validation via Zod, server auth guards.
+
+Data Model (Drizzle)
+
+users, artists, profiles, gigs, posts, comments, reactions, news_items, playlists, tracks, verifications, moderation_flags, newsletter_prefs, audit_logs.
+
+Relations & Zod schemas generated; strict enums for genres, roles, content category.
+
+Edge Functions (Supabase)
+
+ingestNews: fetch RSS → normalize → dedupe (title+source+hash) → category map → insert.
+
+newsletterWeekly: segment users by newsletter_prefs → assemble content → send (Mail provider API).
+
+moderationGuard: toxicity/NSFW scoring (provider or heuristic) → auto-flag > threshold.
+
+gigSyncBlr: fetch Bangalore gig sources → normalize → dedupe → index for filters.
+
+artistVerify: webhook to record AI+human verification state transitions.
+
+Web (Next.js)
+
+App router; routes: /, /feed, /creative, /news, /playlists, /gigs, /profile/[handle], /admin.
+
+Use RSC for data fetching where suitable; tanstack-query for client mutations.
+
+Images: next/image only; SVG logo must reference public/logo.svg (no copies).
+
+Accessibility: keyboard nav, focus styles, aria, color contrast.
+
+Mobile (Expo RN)
+
+Stacks: Feed, Creative, News, Playlists, Gigs, Profile.
+
+react-native-svg for logo; one vector mapping of the logo.svg (no duplicates).
+
+Hermes + inlineRequires; minimal polyfills; Flipper disabled in prod.
+
+Moderation & Rules
+
+Rule engine: “no mainstream”, “no self-promo”, bullying/abuse → auto-flag → moderator queue.
+
+Takedown + ban flows in Admin; audit every action.
+
+CI/CD (GitHub Actions)
+
+Enforce pnpm@9, Node 20.x, one lockfile (pnpm-lock.yaml).
+
+Jobs: install → typecheck → lint → unit tests (Vitest) → (optional) Playwright → build web → artifacts (bundle report).
+
+Use the previously provided ci.yml or regenerate one with same gates.
+
+Performance
+
+Web: route-level code-split, image & font optimization, bundle analyzer report committed to reports/.
+
+Mobile: Hermes, inlineRequires, remove unused polyfills/assets.
+
+Caching headers for static assets; ISR for low-churn content.
+
+What to Build & Wire (Task Graph)
+
+Scaffold monorepo with pnpm + Turborepo (optional), strict TS, ESLint/Prettier, commitlint.
+
+Drizzle schemas + migrations; Zod schemas; seed minimal data.
+
+Auth flows (email + WebAuthn), role guards, verification state machine.
+
+Feed: CRUD with moderation queue, reactions; tests for permissions.
+
+News: Edge Function ingestNews, dedupe, categories; UI list + detail; weekly digest query.
+
+Creative: meme generator (client templates + captions), cover-art generator (on-device; hook to server job optional).
+
+Playlists: weekly sync of metadata; UI embeds; admin edit links.
+
+Gig Radar (BLR): ingestion job + filters (date/venue), profile surface, ICS export.
+
+Newsletter: newsletterWeekly function + template; per-user prefs UI.
+
+Admin Console: approvals, bans, content edits, source mgmt, logs; all actions audited.
+
+Observability: request IDs, structured logs, error boundary pages.
+
+Cleanup: remove duplicate assets, “demo/false” components, commented code; all logo refs → canonical.
+
+Testing: unit (Vitest), React Testing Library; E2E (Playwright web; Detox optional for RN).
+
+CI: add .github/workflows/ci.yml; ensure green.
+
+Docs: README, Admin runbook, Edge Function runbook, moderation policy.
+
+Scripts (root package.json)
+
+bootstrap, typecheck, lint, format, test, analyze, depcheck, unused, ci.
+
+Add scripts/find-unused.js to report unused files/assets and fail when non-empty (warn initially).
+
+Guardrails
+
+Never alter env secrets in code; use .env.example and CI fallbacks.
+
+Do not change DB/API contracts without tests + migration notes.
+
+Enforce single logo.svg; deleting any duplicates.
+
+Accessibility + performance checks cannot degrade vs previous commit.
+
+Deliverables (in PR)
+
+✅ Zero-error build (web + mobile build sanity)
+
+✅ Green CI screenshot / link
+
+✅ Bundle analysis (before/after if applicable)
+
+✅ Deleted files list & rationale (from unused script)
+
+✅ Docs: runbooks, moderation policy, newsletter schedule
+
+✅ Test coverage summary (target ≥80% apps, ≥90% packages)
+
+Commit Plan (suggested)
+
+chore(repo): scaffold monorepo (pnpm), strict ts/eslint/prettier/commitlint
+
+feat(db): drizzle schemas + zod types + migrations
+
+feat(auth): email+passkey, roles, artist verification state machine
+
+feat(feed): posts/comments/reactions with moderation queue
+
+feat(news): rss ingest function, categories, ui
+
+feat(creative): meme + cover-art tools (client-first)
+
+feat(playlists): weekly sync + ui
+
+feat(gigs): blr ingestion + filters + profile surface + ics
+
+feat(newsletter): weekly personalized digest
+
+feat(admin): approvals, bans, edits, sources, audit logs
+
+perf(web|mobile): analyzer, hermes, inlineRequires
+
+chore(ci): add pnpm workflow; typecheck, lint, test, build
+
+refactor(assets): canonicalize logo.svg, remove duplicates
+
+test: add/extend unit + e2e
+
+docs: readme + runbooks + moderation policy
