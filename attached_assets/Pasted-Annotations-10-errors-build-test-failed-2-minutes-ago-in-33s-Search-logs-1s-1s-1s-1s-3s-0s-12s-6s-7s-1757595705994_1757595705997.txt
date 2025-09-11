@@ -1,0 +1,188 @@
+Annotations
+10 errors
+build-test
+failed 2 minutes ago in 33s
+Search logs
+1s
+1s
+1s
+1s
+3s
+0s
+12s
+6s
+7s
+Run pnpm run ci:typecheck
+
+> thecueroom@2.0.0 ci:typecheck /home/runner/work/thecueRoom_V2APP/thecueRoom_V2APP
+> pnpm -r run typecheck
+
+Scope: 8 of 9 workspace projects
+apps/mobile typecheck$ tsc -p .
+packages/db typecheck$ tsc -p .
+packages/schemas typecheck$ tsc -p .
+packages/types typecheck$ tsc -p .
+packages/schemas typecheck: Done
+packages/ui typecheck$ tsc -p .
+packages/types typecheck: Done
+packages/utils typecheck$ tsc -p .
+packages/db typecheck: Done
+packages/ui typecheck: Done
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(6,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(8,19): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(9,19): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(10,20): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(11,53): error TS2503: Cannot find namespace 'jest'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(12,21): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(14,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(17,3): error TS2304: Cannot find name 'beforeEach'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(21,3): error TS2304: Cannot find name 'afterEach'.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(26,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(28,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(29,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/__tests__/Feed.test.tsx(33,7): error TS2304: Cannot find name 'expect'.
+Error: apps/mobile typecheck: src/__tests__/Landing.test.tsx(5,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/__tests__/Landing.test.tsx(6,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/__tests__/Landing.test.tsx(8,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/__tests__/Landing.test.tsx(9,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/__tests__/Landing.test.tsx(12,5): error TS2304: Cannot find name 'expect'.
+Error: apps/mobile typecheck: src/__tests__/Navigation.test.tsx(5,1): error TS2304: Cannot find name 'afterEach'.
+Error: apps/mobile typecheck: src/__tests__/Navigation.test.tsx(7,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/__tests__/Navigation.test.tsx(8,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/__tests__/Navigation.test.tsx(11,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/__tests__/Navigation.test.tsx(12,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/__tests__/Navigation.test.tsx(16,5): error TS2304: Cannot find name 'expect'.
+Error: apps/mobile typecheck: src/components/ReportButton.tsx(31,11): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(26,54): error TS2345: Argument of type '{ factorId: string; code: string; }' is not assignable to parameter of type 'MFAVerifyParams'.
+apps/mobile typecheck:   Property 'challengeId' is missing in type '{ factorId: string; code: string; }' but required in type 'MFAVerifyParams'.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(38,21): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(41,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(43,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(45,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(48,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(55,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/components/TOTPSetup.tsx(57,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/lib/coverArt.ts(4,26): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+Error: apps/mobile typecheck: src/lib/notifications.ts(1,23): error TS2307: Cannot find module 'expo-constants' or its corresponding type declarations.
+Error: apps/mobile typecheck: src/lib/notifications.ts(5,16): error TS2664: Invalid module name in augmentation, module 'expo-notifications' cannot be found.
+Error: apps/mobile typecheck: src/lib/notifications.ts(12,31): error TS1323: Dynamic imports are only supported when the '--module' flag is set to 'es2020', 'es2022', 'esnext', 'commonjs', 'amd', 'system', 'umd', 'node16', or 'nodenext'.
+Error: apps/mobile typecheck: src/lib/notifications.ts(12,38): error TS2307: Cannot find module 'expo-notifications' or its corresponding type declarations.
+Error: apps/mobile typecheck: src/lib/session.ts(1,30): error TS2307: Cannot find module 'expo-secure-store' or its corresponding type declarations.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(41,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(43,9): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(44,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(45,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(46,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(47,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(48,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(49,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(51,14): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/navigation/RootNavigator.tsx(55,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(47,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(49,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(50,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(58,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(59,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(60,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(61,14): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(62,14): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(67,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(68,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(69,14): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(73,16): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(74,18): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(75,18): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(76,18): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(80,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(81,14): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(84,14): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(85,16): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(91,16): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(94,16): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(95,18): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Admin.tsx(96,18): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Feed.tsx(57,15): error TS2344: Type 'Post' does not satisfy the constraint 'string'.
+Error: apps/mobile typecheck: src/screens/Feed.tsx(60,5): error TS2322: Type 'GetResult<any, any, "posts", unknown, Query>[]' is not assignable to type 'Post[]'.
+apps/mobile typecheck:   Type 'GetResult<any, any, "posts", unknown, Query>' is not assignable to type 'Post'.
+apps/mobile typecheck:     Type 'ParseQuery<Query> | GetResultHelper<any, any, "posts", unknown, unknown[] & ParseQuery<Query>, unknown>' is not assignable to type 'Post'.
+apps/mobile typecheck:       Type 'ParseQuery<Query>' is not assignable to type 'Post'.
+apps/mobile typecheck:         Type 'GenericStringError | (ParseNodes<EatWhitespace<Query>> extends [infer Fields, `${infer Remainder}`] ? EatWhitespace<Remainder> extends "" ? Fields : ParserError<...> : ParseNodes<...>)' is not assignable to type 'Post'.
+apps/mobile typecheck:           Type '{ error: true; } & String' is missing the following properties from type 'Post': id, content
+Error: apps/mobile typecheck: src/screens/Feed.tsx(63,61): error TS2769: No overload matches this call.
+apps/mobile typecheck:   Overload 1 of 3, '(options: DefinedInitialDataInfiniteOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>, queryClient?: QueryClient | undefined): DefinedUseInfiniteQueryResult<...>', gave the following error.
+apps/mobile typecheck:     Argument of type '{ queryKey: string[]; queryFn: ({ pageParam }: { pageParam?: number | undefined; }) => Promise<Post[]>; getNextPageParam: (lastPage: Post[], allPages: Post[][]) => number | undefined; }' is not assignable to parameter of type 'DefinedInitialDataInfiniteOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>'.
+apps/mobile typecheck:       Property 'initialPageParam' is missing in type '{ queryKey: string[]; queryFn: ({ pageParam }: { pageParam?: number | undefined; }) => Promise<Post[]>; getNextPageParam: (lastPage: Post[], allPages: Post[][]) => number | undefined; }' but required in type 'UseInfiniteQueryOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>'.
+apps/mobile typecheck:   Overload 2 of 3, '(options: UndefinedInitialDataInfiniteOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>, queryClient?: QueryClient | undefined): UseInfiniteQueryResult<...>', gave the following error.
+apps/mobile typecheck:     Argument of type '{ queryKey: string[]; queryFn: ({ pageParam }: { pageParam?: number | undefined; }) => Promise<Post[]>; getNextPageParam: (lastPage: Post[], allPages: Post[][]) => number | undefined; }' is not assignable to parameter of type 'UndefinedInitialDataInfiniteOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>'.
+apps/mobile typecheck:       Property 'initialPageParam' is missing in type '{ queryKey: string[]; queryFn: ({ pageParam }: { pageParam?: number | undefined; }) => Promise<Post[]>; getNextPageParam: (lastPage: Post[], allPages: Post[][]) => number | undefined; }' but required in type 'UseInfiniteQueryOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>'.
+apps/mobile typecheck:   Overload 3 of 3, '(options: UseInfiniteQueryOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>, queryClient?: QueryClient | undefined): UseInfiniteQueryResult<...>', gave the following error.
+apps/mobile typecheck:     Argument of type '{ queryKey: string[]; queryFn: ({ pageParam }: { pageParam?: number | undefined; }) => Promise<Post[]>; getNextPageParam: (lastPage: Post[], allPages: Post[][]) => number | undefined; }' is not assignable to parameter of type 'UseInfiniteQueryOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>'.
+apps/mobile typecheck:       Property 'initialPageParam' is missing in type '{ queryKey: string[]; queryFn: ({ pageParam }: { pageParam?: number | undefined; }) => Promise<Post[]>; getNextPageParam: (lastPage: Post[], allPages: Post[][]) => number | undefined; }' but required in type 'UseInfiniteQueryOptions<Post[], Error, InfiniteData<Post[], unknown>, string[], number | undefined>'.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(16,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(17,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(22,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(25,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(26,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(27,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(28,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(29,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/GigRadar.tsx(32,38): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Landing.tsx(19,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Landing.tsx(21,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Landing.tsx(23,10): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Landing.tsx(25,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/MemeStudio.tsx(25,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/MemeStudio.tsx(26,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/MemeStudio.tsx(32,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/MemeStudio.tsx(33,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Playlists.tsx(22,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Playlists.tsx(26,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Playlists.tsx(27,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Playlists.tsx(28,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Playlists.tsx(32,11): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/PostComposer.tsx(34,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/PostComposer.tsx(35,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/PostComposer.tsx(42,21): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/PostComposer.tsx(43,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/PostComposer.tsx(44,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(26,17): error TS2344: Type 'ProfileData' does not satisfy the constraint 'string'.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(35,41): error TS2339: Property 'verified' does not exist on type '{}'.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(38,34): error TS2339: Property 'name' does not exist on type '{}'.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(48,6): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(49,8): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(50,18): error TS2339: Property 'name' does not exist on type '{}'.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(50,33): error TS2339: Property 'verified' does not exist on type '{}'.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(53,9): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(54,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/screens/Profile.tsx(59,12): error TS2686: 'React' refers to a UMD global, but the current file is a module. Consider adding an import instead.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(7,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(9,24): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(12,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(15,26): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(15,80): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(16,16): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(18,14): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(18,35): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(18,74): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(19,20): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(23,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(24,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(26,1): error TS2582: Cannot find name 'test'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(36,23): error TS2304: Cannot find name 'expect'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(37,16): error TS2769: No overload matches this call.
+apps/mobile typecheck:   Argument of type '[string]' is not assignable to parameter of type 'never'.
+apps/mobile typecheck:   Overload 2 of 2, '(options: never): void', gave the following error.
+apps/mobile typecheck:     Argument of type 'string' is not assignable to parameter of type 'never'.
+Error: apps/mobile typecheck: src/tests/Flows.test.tsx(38,23): error TS2304: Cannot find name 'expect'.
+Error: apps/mobile typecheck: src/tests/OfflineCache.test.tsx(7,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/OfflineCache.test.tsx(8,23): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/OfflineCache.test.tsx(11,1): error TS2304: Cannot find name 'jest'.
+Error: apps/mobile typecheck: src/tests/OfflineCache.test.tsx(19,1): error TS2582: Cannot find name 'test'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+Error: apps/mobile typecheck: src/tests/OfflineCache.test.tsx(22,3): error TS2304: Cannot find name 'expect'.
+Error: apps/mobile typecheck: src/tests/OfflineCache.test.tsx(23,5): error TS2304: Cannot find name 'expect'.
+apps/mobile typecheck: Failed
+/home/runner/work/thecueRoom_V2APP/thecueRoom_V2APP/apps/mobile:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @thecueroom/mobile@ typecheck: `tsc -p .`
+Exit status 2
+ ELIFECYCLE  Command failed with exit code 2.
+Error: Process completed with exit code 2.
