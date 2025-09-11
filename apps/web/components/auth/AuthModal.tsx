@@ -160,24 +160,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
     }
   };
 
-  const handleSignIn = async (data: SignInForm) => {
-    try {
-      setErrors({});
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (error) throw error;
-
-      if (authData.user) {
-        onClose();
-        window.location.reload(); // Refresh to update auth state
-      }
-    } catch (error: any) {
-      setErrors({ general: error.message });
-    }
-  };
+  
 
   if (!open) return null;
 
