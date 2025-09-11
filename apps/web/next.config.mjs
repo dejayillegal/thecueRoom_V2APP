@@ -5,7 +5,7 @@ const isGhPages = process.env.GITHUB_PAGES === 'true';
 const repoName = process.env.GHP_REPO_BASENAME || '';
 
 const nextConfig = {
-  output: 'export',
+  // output: 'export', // Commented out to allow middleware and dynamic features
   images: { unoptimized: true },
   trailingSlash: true,
   ...(isGhPages && repoName
