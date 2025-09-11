@@ -31,7 +31,6 @@ export default function UserMenu() {
         className="h-8 w-8 overflow-hidden rounded-full border border-lime"
       >
         {avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
         ) : (
           <span className="block h-full w-full bg-lime" />
