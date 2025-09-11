@@ -44,6 +44,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!authData.user) {
+      return NextResponse.json(
+        { error: 'User creation failed' },
+        { status: 400 }
+      );
+    }
+
     // Create user profile
     if (authData.user) {
       const { error: profileError } = await supabase

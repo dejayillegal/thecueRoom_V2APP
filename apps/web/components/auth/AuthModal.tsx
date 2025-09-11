@@ -104,7 +104,18 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      setErrors({ general: error.message || 'Authentication failed' });
+      let errorMessage = 'Authentication failed';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Provide more helpful messages for common errors
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password. Make sure the admin user has been created first.';
+      }
+      
+      setErrors({ general: errorMessage });
     } finally {
       setLoading(false);
     }
