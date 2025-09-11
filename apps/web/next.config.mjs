@@ -1,9 +1,15 @@
+import bundleAnalyzer from '@next/bundle-analyzer';
+
 /** @type {import('next').NextConfig} */
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const isStaticExport = Boolean(process.env.STATIC_EXPORT);
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+  openAnalyzer: false,
+});
 
-export default {
+const nextConfig = {
   ...(isStaticExport ? { output: "export", images: { unoptimized: true } } : {}),
   basePath,
   assetPrefix: basePath ? `${basePath}/` : undefined,
@@ -25,3 +31,5 @@ export default {
     return config
   }
 };
+
+export default withBundleAnalyzer(nextConfig);

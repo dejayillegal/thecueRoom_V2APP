@@ -6,15 +6,15 @@
     "dev": "next dev",
     "lint": "eslint --ext .ts,.tsx .",
     "test": "vitest run",
-    "prebuild": "npm --prefix ../../packages/schemas ci --no-audit --no-fund || npm --prefix ../../packages/schemas i --no-audit --no-fund",
-    "prebuild:static": "npm --prefix ../../packages/schemas ci --no-audit --no-fund || npm --prefix ../../packages/schemas i --no-audit --no-fund",
+    "typecheck": "tsc --noEmit",
     "build": "next build",
     "build:static": "STATIC_EXPORT=1 next build",
+    "analyze": "ANALYZE=true next build",
     "preview:static": "npx http-server ./out -p 4173 -c-1 --silent",
     "start": "next start",
-    "e2e": "npm run build && npx playwright install --with-deps && playwright test",
-    "e2e:ui": "npm run build && npx playwright install --with-deps && PWDEBUG=1 playwright test",
-    "e2e:ci": "npm run build && npx playwright install --with-deps && playwright test --reporter=line"
+    "e2e": "pnpm run build && npx playwright install --with-deps && playwright test",
+    "e2e:ui": "pnpm run build && npx playwright install --with-deps && PWDEBUG=1 playwright test",
+    "e2e:ci": "pnpm run build && npx playwright install --with-deps && playwright test --reporter=line"
   },
   "dependencies": {
     "class-variance-authority": "0.7.0",
@@ -38,6 +38,7 @@
     "@types/react": "^18.2.45",
     "@types/react-dom": "18.2.15",
     "@vitejs/plugin-react": "5.0.2",
+    "@next/bundle-analyzer": "^15.0.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.57.0",
     "eslint-config-next": "15.5.2",

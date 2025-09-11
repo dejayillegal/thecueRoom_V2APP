@@ -9,10 +9,6 @@ channel = "stable-25_05"
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 24678
-externalPort = 3001
-
 [workflows]
 runButton = "Project"
 
@@ -31,7 +27,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd apps/web && npm run dev -- --port 5000 --hostname 0.0.0.0"
+args = "cd apps/web && pnpm run dev --port 5000 --hostname 0.0.0.0"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
