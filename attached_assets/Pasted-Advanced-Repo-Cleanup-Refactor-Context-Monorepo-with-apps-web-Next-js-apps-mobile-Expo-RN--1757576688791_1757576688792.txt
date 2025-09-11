@@ -1,0 +1,291 @@
+Advanced Repo Cleanup & Refactor
+
+Context
+
+Monorepo with apps/web (Next.js), apps/mobile (Expo RN), packages/* (shared), drizzle/zod schemas, Tailwind, TypeScript.
+
+Canonical logo is logo.svg (with anchored blink). Use exactly this file; do not duplicate or alter geometry/paths/animation.
+
+Remove ugly code / random code / dead assets and consolidate UI references. Upgrade to advanced standards without changing intended UX.
+
+Objectives (must all be met)
+
+Create a new branch chore/advanced-cleanup.
+
+Enforce strict TypeScript, modern ESLint, Prettier, and consistent imports across the monorepo.
+
+Delete unused code, assets (PNG/SVG), styles, and “demo/false” components; replace ad-hoc logic with testable, typed utilities.
+
+Normalize UI/UX asset references so all places use the canonical apps/web/public/logo.svg (and mobile assets mirror it once). No duplicates.
+
+Replace imperative, brittle code with composable functions, hooks, and typed services. No inlined magic numbers or TODO stubs left behind.
+
+Ensure builds pass (web + mobile), tests pass, and bundle size is reduced (verify with reports).
+
+Produce a single PR with a human-readable changelog and per-commit scope.
+
+Guardrails
+
+Never modify environment secrets.
+
+No breaking schema or API contracts unless test-covered and noted in the PR.
+
+If code is unreachable or unused, delete; if possibly referenced by dynamic import, convert to explicit import or add test to prove usage.
+
+Step 1 — Workspace Setup
+
+Detect package manager; prefer pnpm. If mixed, migrate to pnpm.
+
+Add root scripts and workspace config:
+
+// package.json (root)
+{
+  "private": true,
+  "packageManager": "pnpm@9",
+  "scripts": {
+    "bootstrap": "pnpm install && pnpm -r run build:types",
+    "lint": "pnpm -r exec eslint .",
+    "format": "pnpm -r exec prettier -w .",
+    "typecheck": "pnpm -r exec tsc -b",
+    "test": "pnpm -r exec vitest run",
+    "analyze": "pnpm -r --filter \"./apps/*\" run analyze",
+    "depcheck": "pnpm -r exec depcheck --ignores=@types/*,eslint*,prettier*",
+    "unused": "node scripts/find-unused.js",
+    "ci": "pnpm bootstrap && pnpm typecheck && pnpm lint && pnpm test"
+  }
+}
+
+// turbo.json (if using Turborepo; otherwise skip)
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": { "outputs": ["dist/**", ".next/**", "build/**"] },
+    "typecheck": {},
+    "lint": {},
+    "test": {}
+  }
+}
+
+Step 2 — Code Quality Baseline
+
+Add ESLint + Prettier at root:
+
+// .eslintrc.cjs
+module.exports = {
+  root: true,
+  ignorePatterns: ["dist", "build", ".next", "coverage", "node_modules"],
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  parser: "@typescript-eslint/parser",
+  parserOptions: { project: true, tsconfigRootDir: __dirname },
+  plugins: ["@typescript-eslint", "import", "unused-imports"],
+  rules: {
+    "@typescript-eslint/consistent-type-imports": "error",
+    "unused-imports/no-unused-imports": "error",
+    "import/order": ["error", { "newlines-between": "always", alphabetize: { order: "asc" } }],
+    "react/jsx-no-useless-fragment": "warn",
+    "react/no-unstable-nested-components": "warn"
+  },
+  settings: { react: { version: "detect" } }
+}
+
+// .prettierrc
+{ "singleQuote": true, "semi": true, "printWidth": 100, "trailingComma": "all" }
+
+
+TypeScript Strict Everywhere: in each tsconfig.json (root and packages/apps), set:
+
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "useUnknownInCatchVariables": true,
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true
+  }
+}
+
+Step 3 — Asset & UI Reference Cleanup
+
+Single source of truth:
+
+Keep apps/web/public/logo.svg as canonical.
+
+In apps/mobile, keep a single RN vector (react-native-svg) or a PNG rendition generated once; do not duplicate variants.
+
+Find & remove duplicates:
+
+Delete all PNG/SVG logo variants, rasterized copies, and unused icons.
+
+Replace <img> with framework-native image components (Next <Image>, RN <Image> or SvgUri).
+
+Enforce import path alias (e.g., @/components, @/lib) and fix all relative import spaghetti.
+
+Step 4 — Dead Code & False UI Detection
+
+Add a helper script to detect unused TS/TSX and unused assets:
+
+// scripts/find-unused.js
+import fs from 'node:fs';
+import path from 'node:path';
+import glob from 'fast-glob';
+
+const root = process.cwd();
+const exts = ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss', '.svg', '.png', '.jpg', '.jpeg', '.gif'];
+
+function readAllFiles() {
+  return glob.sync(['**/*.{ts,tsx,js,jsx,css,scss,svg,png,jpg,jpeg,gif}'], {
+    cwd: root,
+    ignore: ['**/node_modules/**', '**/.next/**', '**/dist/**', '**/build/**', '**/coverage/**'],
+    dot: true,
+  });
+}
+
+function findReferences(files) {
+  const content = files.map(f => fs.readFileSync(path.join(root, f), 'utf8')).join('\n');
+  return (needle) => content.includes(needle);
+}
+
+const files = readAllFiles();
+const isReferenced = findReferences(files);
+const candidates = files.filter(f => exts.includes(path.extname(f)));
+
+const unused = candidates.filter(f => {
+  // Never treat canonical logo as unused
+  if (f.endsWith('apps/web/public/logo.svg')) return false;
+  const base = path.basename(f);
+  return !isReferenced(base);
+});
+
+if (unused.length) {
+  console.log('UNUSED FILES:');
+  unused.forEach(f => console.log(' -', f));
+  process.exitCode = 1;
+} else {
+  console.log('No obvious unused files.');
+}
+
+
+Run pnpm unused and remove the listed files after manual inspection.
+
+Remove stubs, example/demo pages, duplicated components, and commented code blocks.
+
+Step 5 — Advanced Refactors
+
+Convert any anonymous default exports to named exports.
+
+Extract business logic from components into @/lib/* with pure functions + unit tests.
+
+Replace imperative effects with custom hooks (debounce, memoized selectors).
+
+Standardize data fetching:
+
+Next.js: use @tanstack/react-query or RSC patterns consistently.
+
+RN: co-locate queries in /features/*/api.ts.
+
+Accessibility pass: aria labels, focus rings, keyboard navigation, color contrast tokens.
+
+Step 6 — Performance & Bundle Hygiene
+
+Next.js (apps/web):
+
+Enable image optimization & font optimization; audit dynamic imports.
+
+Add next.config.mjs with productionBrowserSourceMaps: false, strict headers for caching of static assets.
+
+Add pnpm analyze using next-bundle-analyzer; commit the HTML report to reports/.
+
+React Native (apps/mobile):
+
+Remove unused polyfills. Ensure babel plugins are minimal.
+
+Turn on Hermes if not already; enable inlineRequires.
+
+Step 7 — Testing & Type Coverage
+
+Ensure Vitest/Jest runs for packages + apps; add missing tests for new utilities.
+
+Add type-coverage:
+
+// package.json (root) add devDep: type-coverage
+"scripts": {
+  "typecov": "type-coverage --detail --at-least 90"
+}
+
+
+Target: ≥90% type coverage on packages; ≥80% on apps (raise if easy).
+
+Step 8 — Lint/Format/Dep Audit
+
+Run: pnpm depcheck and remove unused deps.
+
+Pin major versions; prefer ^ only for minors.
+
+Fix all ESLint errors; no warnings allowed in CI.
+
+Step 9 — Commits & PR
+
+Create atomic commits; suggested order:
+
+chore(repo): add strict ts/eslint/prettier workspace config
+
+refactor(assets): dedupe and canonicalize logo + image usage
+
+refactor(ui): replace <img> with framework image, fix imports
+
+chore(scripts): add unused finder, depcheck, analyze
+
+refactor(core): extract business logic to /lib with tests
+
+perf(web): code-split heavy routes, add analyzer
+
+perf(mobile): enable Hermes/inlineRequires
+
+chore(deps): remove unused, pin versions
+
+test: add/repair units for utils and hooks
+
+docs: write cleanup report and migration notes
+
+Open PR “Advanced Cleanup: strict TS, assets dedupe, dead code removal, perf” and include:
+
+Before/after bundle sizes
+
+List of removed files (auto-generated from scripts/find-unused.js)
+
+Any notable refactors, with how to test steps.
+
+Acceptance Criteria (Automated)
+
+pnpm ci passes on root.
+
+apps/web: pnpm build + analyzer report generated.
+
+apps/mobile: expo prebuild (if used) + gradle assembleDebug/xcodebuild succeed locally or via EAS.
+
+pnpm typecov thresholds met.
+
+No ESLint warnings; Prettier clean.
+
+No duplicate logo assets; all references point to canonical logo.svg.
+
+When done, post:
+
+A short summary,
+
+A file deletion list,
+
+Bundle reports location,
+
+Any follow-ups you recommend.

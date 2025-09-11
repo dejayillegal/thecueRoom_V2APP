@@ -10,6 +10,10 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
+localPort = 24678
+externalPort = 3001
+
+[[ports]]
 localPort = 38443
 externalPort = 3000
 
@@ -36,3 +40,8 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "run", "start", "--prefix", "apps/web"]
+build = ["npm", "run", "build:web"]
