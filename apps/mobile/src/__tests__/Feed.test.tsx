@@ -1,7 +1,9 @@
+import React from 'react';
 import { render, waitFor, cleanup } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tan/react-query';
 import Feed from '../screens/Feed';
 import { supabase } from '../lib/supabase';
+import { Post } from '@thecueroom/schemas';
 
 jest.mock('../lib/supabase');
 

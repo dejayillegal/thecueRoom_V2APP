@@ -7,9 +7,23 @@ const repoName = process.env.GHP_REPO_BASENAME || '';
 const nextConfig = {
   output: 'export',
   images: { unoptimized: true },
+  trailingSlash: true,
   ...(isGhPages && repoName
     ? { basePath: `/${repoName}`, assetPrefix: `/${repoName}/` }
-    : {})
+    : {}),
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default bundleAnalyzer({ enabled: process.env.ANALYZE === 'true', openAnalyzer: false })(nextConfig);

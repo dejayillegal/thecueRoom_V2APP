@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, act, cleanup } from '@testing-library/react-native';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import RootNavigator, { RootStackParamList } from '../navigation/RootNavigator';

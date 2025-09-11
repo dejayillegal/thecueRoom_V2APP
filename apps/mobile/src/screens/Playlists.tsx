@@ -1,3 +1,4 @@
+import React from 'react';
 import { FlatList, View, Text, Button, Linking } from 'react-native';
 import { theme } from '../theme';
 

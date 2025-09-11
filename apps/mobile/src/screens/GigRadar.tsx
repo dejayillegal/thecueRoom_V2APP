@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, Button } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { theme } from '../theme';

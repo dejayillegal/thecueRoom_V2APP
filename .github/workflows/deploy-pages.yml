@@ -36,7 +36,7 @@ jobs:
         id: build
         env:
           GITHUB_PAGES: 'true'
-          GHP_REPO_BASENAME: ${{ vars.GHP_REPO_BASENAME }}
+          GHP_REPO_BASENAME: ${{ github.event.repository.name }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |

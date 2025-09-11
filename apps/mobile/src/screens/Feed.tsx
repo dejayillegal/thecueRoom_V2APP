@@ -60,11 +60,19 @@ export default function Feed() {
     return data ?? [];
   };
 
-  const { data, fetchNextPage, refetch } = useInfiniteQuery({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status
+  } = useInfiniteQuery({
     queryKey: ['posts'],
-    queryFn: fetchPosts,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.length === PAGE_SIZE ? allPages.length : undefined,
+    queryFn: ({ pageParam = 0 }: { pageParam?: number }) => fetchPosts(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage: Post[], allPages: Post[][]) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
+    },
   });
 
   const [refreshing, setRefreshing] = useState(false);

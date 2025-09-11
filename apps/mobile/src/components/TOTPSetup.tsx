@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Image } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { theme } from '../theme';
@@ -23,7 +23,15 @@ export default function TOTPSetup() {
   const verify = async () => {
     if (!factorId) return;
     setError(null);
-    const { error } = await supabase.auth.mfa.verify({ factorId, code });
+    
+    // Fetch the challenge ID before verifying
+    const { data: challenge } = await supabase.auth.mfa.challenge({ factorId: factorId });
+    if (!challenge) {
+      setError('Failed to create challenge');
+      return;
+    }
+
+    const { error } = await supabase.auth.mfa.verify({ factorId, code, challengeId: challenge.id });
     if (error) {
       setError(error.message);
     } else {
