@@ -87,9 +87,9 @@ export default function SetupAdminPage() {
           <div className="mt-8 p-4 bg-neutral-900 rounded border border-neutral-700">
             <h3 className="font-semibold mb-2">Instructions:</h3>
             <ol className="text-sm space-y-1 list-decimal list-inside text-neutral-300">
-              <li>Click "Create Admin User" to set up the admin account</li>
+              <li>Click &quot;Create Admin User&quot; to set up the admin account</li>
               <li>Once successful, go back to the main page</li>
-              <li>Click "Sign In" and use these credentials</li>
+              <li>Click &quot;Sign In&quot; and use these credentials</li>
               <li>You should be logged in as an admin user</li>
             </ol>
           </div>

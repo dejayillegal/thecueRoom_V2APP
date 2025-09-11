@@ -13,7 +13,6 @@ import {
   real,
   index,
   uniqueIndex,
-  primaryKey
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
@@ -142,7 +141,9 @@ export const comments = pgTable('comments', {
   postId: uuid('post_id').references(() => posts.id, { onDelete: 'cascade' }).notNull(),
   authorId: uuid('author_id').references(() => profiles.userId, { onDelete: 'cascade' }).notNull(),
   content: text('content').notNull(),
-  parentId: uuid('parent_id').references(() => comments.id),
+  // Self-referential foreign key; cast to any to satisfy TypeScript
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parentId: uuid('parent_id').references((): any => comments.id),
   likesCount: integer('likes_count').notNull().default(0),
   isPublished: boolean('is_published').notNull().default(true),
   moderationScore: real('moderation_score'),
