@@ -1,0 +1,44 @@
+build-test
+failed now in 22s
+Search logs
+2s
+1s
+1s
+3s
+11s
+0s
+1s
+Run pnpm install --frozen-lockfile
+Scope: all 9 workspace projects
+ERR_PNPM_OUTDATED_LOCKFILE  Cannot install with "frozen-lockfile" because pnpm-lock.yaml is not up to date with package.json
+
+Note that in CI environments this setting is true by default. If you still need to run install in such cases, use "pnpm install --no-frozen-lockfile"
+
+Failure reason:
+specifiers in the lockfile ({"@commitlint/cli":"^18.4.3","@commitlint/config-conventional":"^18.4.3","@typescript-eslint/eslint-plugin":"^6.13.1","@typescript-eslint/parser":"^6.13.1","depcheck":"^1.4.7","eslint":"^8.54.0","eslint-plugin-import":"^2.29.0","eslint-plugin-jsx-a11y":"^6.8.0","eslint-plugin-react-hooks":"^4.6.0","eslint-plugin-unused-imports":"^3.0.0","prettier":"^3.1.0","typescript":"^5.3.2"}) don't match specs in package.json ({"@commitlint/cli":"^18.4.3","@commitlint/config-conventional":"^18.4.3","@typescript-eslint/eslint-plugin":"^6.13.1","@typescript-eslint/parser":"^6.13.1","depcheck":"^1.4.7","eslint":"^8.54.0","eslint-plugin-import":"^2.29.0","eslint-plugin-jsx-a11y":"^6.8.0","eslint-plugin-react-hooks":"^4.6.0","eslint-plugin-unused-imports":"^3.0.0","prettier":"^3.1.0","typescript":"^5.3.2","@types/jest":"^30.0.0"})
+Error: Process completed with exit code 1.
+
+Deploy (GitHub Pages)
+Assistant checkpoint: Fix mobile TypeScript errors and web asset paths #7
+Jobs
+Run details
+Annotations
+1 error
+build
+failed 1 minute ago in 15s
+Search logs
+2s
+1s
+1s
+0s
+9s
+0s
+Run pnpm install --frozen-lockfile
+Scope: all 9 workspace projects
+ERR_PNPM_OUTDATED_LOCKFILE  Cannot install with "frozen-lockfile" because pnpm-lock.yaml is not up to date with package.json
+
+Note that in CI environments this setting is true by default. If you still need to run install in such cases, use "pnpm install --no-frozen-lockfile"
+
+Failure reason:
+specifiers in the lockfile ({"@commitlint/cli":"^18.4.3","@commitlint/config-conventional":"^18.4.3","@typescript-eslint/eslint-plugin":"^6.13.1","@typescript-eslint/parser":"^6.13.1","depcheck":"^1.4.7","eslint":"^8.54.0","eslint-plugin-import":"^2.29.0","eslint-plugin-jsx-a11y":"^6.8.0","eslint-plugin-react-hooks":"^4.6.0","eslint-plugin-unused-imports":"^3.0.0","prettier":"^3.1.0","typescript":"^5.3.2"}) don't match specs in package.json ({"@commitlint/cli":"^18.4.3","@commitlint/config-conventional":"^18.4.3","@typescript-eslint/eslint-plugin":"^6.13.1","@typescript-eslint/parser":"^6.13.1","depcheck":"^1.4.7","eslint":"^8.54.0","eslint-plugin-import":"^2.29.0","eslint-plugin-jsx-a11y":"^6.8.0","eslint-plugin-react-hooks":"^4.6.0","eslint-plugin-unused-imports":"^3.0.0","prettier":"^3.1.0","typescript":"^5.3.2","@types/jest":"^30.0.0"})
+Error: Process completed with exit code 1.

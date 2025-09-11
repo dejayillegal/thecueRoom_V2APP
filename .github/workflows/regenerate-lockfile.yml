@@ -1,0 +1,44 @@
+name: Regenerate pnpm lockfile
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - run: corepack prepare pnpm@9 --activate
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Remove old lockfile if exists
+        run: rm -f pnpm-lock.yaml
+
+      - name: Generate new lockfile
+        run: pnpm install
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: regenerate pnpm-lock.yaml with pnpm@9'
+          title: 'chore: regenerate pnpm-lock.yaml'
+          body: |
+            This PR regenerates the pnpm-lock.yaml file with pnpm@9 to resolve the lockfile mismatch error in CI.
+            
+            After this is merged, the CI workflows should be reverted to use `--frozen-lockfile` for better build reproducibility.
+          branch: chore/regenerate-pnpm-lock
+          delete-branch: true
