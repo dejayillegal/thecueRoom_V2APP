@@ -39,8 +39,12 @@ export function middleware(request: NextRequest) {
   const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path));
   
   if (isProtectedPath) {
-    const token = request.cookies.get('sb-access-token');
-    if (!token) {
+    // Check for Supabase session tokens
+    const accessToken = request.cookies.get('sb-access-token') || 
+                       request.cookies.get('supabase-auth-token') ||
+                       request.cookies.get('sb-token');
+    
+    if (!accessToken) {
       const url = request.nextUrl.clone();
       url.pathname = '/';
       url.searchParams.set('auth', 'required');

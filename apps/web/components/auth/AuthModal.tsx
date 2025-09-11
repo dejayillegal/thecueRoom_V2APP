@@ -89,9 +89,17 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
         }
         
         console.log('Sign in successful:', data);
+        
         // Handle successful sign in
         onClose();
-        window.location.reload(); // Refresh to update auth state
+        
+        // Check if user is admin and redirect appropriately
+        const userRole = data.user?.user_metadata?.role;
+        if (userRole === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/feed';
+        }
       } else if (activeTab === 'signup') {
         const { data, error } = await supabase.auth.signUp({ 
           email, 
