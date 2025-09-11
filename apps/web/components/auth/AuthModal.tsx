@@ -2,12 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { signInSchema, signUpSchema, forgotPasswordSchema, type SignInForm, type SignUpForm, type ForgotPasswordForm } from '@/lib/schemas';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { getBrowserClient } from '@/lib/supabase-browser';
 
 type TabType = 'signin' | 'signup' | 'forgot';
 
@@ -78,6 +73,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
     if (!validateForm()) return;
 
     setLoading(true);
+    const supabase = getBrowserClient();
 
     try {
       if (activeTab === 'signin') {
@@ -85,51 +81,82 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
         if (error) throw error;
         // Handle successful sign in
         onClose();
+        window.location.reload(); // Refresh to update auth state
       } else if (activeTab === 'signup') {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/callback`
+          }
+        });
         if (error) throw error;
         // Handle successful sign up
         alert('Please check your email for verification link');
         onClose();
       } else if (activeTab === 'forgot') {
-        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/callback`
+        });
         if (error) throw error;
         alert('Password reset email sent');
         onClose();
       }
     } catch (error: any) {
-      setErrors({ general: error.message });
+      console.error('Auth error:', error);
+      setErrors({ general: error.message || 'Authentication failed' });
     } finally {
       setLoading(false);
     }
   };
 
   const handleEmailLink = async () => {
+    const supabase = getBrowserClient();
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email });
+      const { error } = await supabase.auth.signInWithOtp({ 
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/callback`
+        }
+      });
       if (error) throw error;
       alert('Magic link sent to your email');
       onClose();
     } catch (error: any) {
-      setErrors({ general: error.message });
+      console.error('Email link error:', error);
+      setErrors({ general: error.message || 'Failed to send magic link' });
     }
   };
 
   const handleGoogleAuth = async () => {
+    const supabase = getBrowserClient();
     try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+      const { error } = await supabase.auth.signInWithOAuth({ 
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/callback`
+        }
+      });
       if (error) throw error;
     } catch (error: any) {
-      setErrors({ general: error.message });
+      console.error('Google auth error:', error);
+      setErrors({ general: error.message || 'Google authentication failed' });
     }
   };
 
   const handleAppleAuth = async () => {
+    const supabase = getBrowserClient();
     try {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'apple' });
+      const { error } = await supabase.auth.signInWithOAuth({ 
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/callback`
+        }
+      });
       if (error) throw error;
     } catch (error: any) {
-      setErrors({ general: error.message });
+      console.error('Apple auth error:', error);
+      setErrors({ general: error.message || 'Apple authentication failed' });
     }
   };
 
