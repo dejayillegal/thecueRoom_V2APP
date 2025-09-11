@@ -1,11 +1,26 @@
-'use client';
+
+#!/usr/bin/env node
+
+/**
+ * Logo Protection Script
+ * This script ensures the exact logo SVG is never modified
+ */
+
+import { readFileSync, writeFileSync } from 'fs';
+import { createHash } from 'crypto';
+
+const LOGO_FILE = 'apps/web/components/BrandLogo.tsx';
+const BACKUP_FILE = 'scripts/logo-backup.tsx';
+
+// Store the exact logo content as backup
+const EXACT_LOGO_CONTENT = `'use client';
 
 /**
  * CRITICAL: DO NOT MODIFY THE RAW_LOGO_SVG CONTENT BELOW
  * This is the exact user-provided logo and must remain unchanged.
  * Any modifications will break the logo verification system.
  */
-const RAW_LOGO_SVG = `
+const RAW_LOGO_SVG = \`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" aria-label="thecueRoom logo with anchored blink" role="img">
   <style>
     #blinkPath { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 10s infinite; }
@@ -24,7 +39,7 @@ const RAW_LOGO_SVG = `
     </g>
   </g>
 </svg>
-`;
+\`;
 
 // Freeze the logo to prevent runtime modifications
 Object.freeze(RAW_LOGO_SVG);
@@ -44,3 +59,46 @@ export default function BrandLogo({
 
 // Prevent modifications to this module
 Object.freeze(BrandLogo);
+`;
+
+function restoreLogo() {
+  console.log('🔒 Restoring exact logo from backup...');
+  writeFileSync(LOGO_FILE, EXACT_LOGO_CONTENT);
+  console.log('✅ Logo restored successfully');
+}
+
+function verifyLogo() {
+  try {
+    const currentContent = readFileSync(LOGO_FILE, 'utf8');
+    const expectedHash = createHash('sha256').update(EXACT_LOGO_CONTENT).digest('hex');
+    const currentHash = createHash('sha256').update(currentContent).digest('hex');
+    
+    if (expectedHash !== currentHash) {
+      console.warn('⚠️  Logo file has been modified!');
+      console.log('Expected hash:', expectedHash);
+      console.log('Current hash: ', currentHash);
+      return false;
+    }
+    
+    console.log('✅ Logo verification passed');
+    return true;
+  } catch (error) {
+    console.error('❌ Error verifying logo:', error.message);
+    return false;
+  }
+}
+
+// Command line interface
+const command = process.argv[2];
+
+switch (command) {
+  case 'verify':
+    process.exit(verifyLogo() ? 0 : 1);
+  case 'restore':
+    restoreLogo();
+    break;
+  default:
+    console.log('Usage: node protect-logo.mjs [verify|restore]');
+    console.log('  verify  - Check if logo has been modified');
+    console.log('  restore - Restore logo to exact original');
+}
