@@ -25,23 +25,56 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create user with admin privileges
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        role,
-        created_by: 'admin_setup'
-      }
-    });
+    // First, try to get the existing user
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existingUser = existingUsers?.users?.find(u => u.email === email);
 
-    if (authError) {
-      console.error('Auth error:', authError);
-      return NextResponse.json(
-        { error: authError.message },
-        { status: 400 }
+    let authData;
+    
+    if (existingUser) {
+      // User exists, update password and confirm email
+      const { data: updateData, error: updateError } = await supabase.auth.admin.updateUserById(
+        existingUser.id,
+        {
+          password,
+          email_confirm: true,
+          user_metadata: {
+            role,
+            updated_by: 'admin_setup'
+          }
+        }
       );
+
+      if (updateError) {
+        console.error('Update error:', updateError);
+        return NextResponse.json(
+          { error: `Failed to update existing user: ${updateError.message}` },
+          { status: 400 }
+        );
+      }
+
+      authData = { user: updateData.user };
+    } else {
+      // Create new user
+      const { data: createData, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          role,
+          created_by: 'admin_setup'
+        }
+      });
+
+      if (authError) {
+        console.error('Auth error:', authError);
+        return NextResponse.json(
+          { error: authError.message },
+          { status: 400 }
+        );
+      }
+
+      authData = createData;
     }
 
     if (!authData.user) {
@@ -51,28 +84,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user profile
+    // Create or update user profile
     if (authData.user) {
-      const { error: profileError } = await supabase
-        .from('users')
-        .insert({
-          id: authData.user.id,
-          email: authData.user.email,
-          handle: email.split('@')[0], // Use email prefix as handle
-          role,
-          verified: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
+      const profileData = {
+        id: authData.user.id,
+        email: authData.user.email,
+        handle: email.split('@')[0], // Use email prefix as handle
+        role,
+        verified: true,
+        updated_at: new Date().toISOString()
+      };
 
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
-        // Continue anyway, user was created successfully
+      if (existingUser) {
+        // Update existing profile
+        const { error: profileError } = await supabase
+          .from('users')
+          .update(profileData)
+          .eq('id', authData.user.id);
+
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+        }
+      } else {
+        // Insert new profile
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            ...profileData,
+            created_at: new Date().toISOString()
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
       }
     }
 
     return NextResponse.json({
       success: true,
+      action: existingUser ? 'updated' : 'created',
       user: {
         id: authData.user?.id,
         email: authData.user?.email,

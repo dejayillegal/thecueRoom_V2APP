@@ -28,7 +28,8 @@ export default function SetupAdminPage() {
       const result = await response.json();
 
       if (response.ok) {
-        setMessage('✅ Admin user created successfully! You can now sign in.');
+        const action = result.action === 'updated' ? 'updated' : 'created';
+        setMessage(`✅ Admin user ${action} successfully! You can now sign in.`);
       } else {
         setMessage(`❌ Error: ${result.error}`);
       }
