@@ -37,12 +37,12 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
         onClose();
       }
     };
-    
+
     if (open) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
     }
-    
+
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
@@ -52,7 +52,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
   const validateForm = () => {
     try {
       setErrors({});
-      
+
       if (activeTab === 'signin') {
         signInSchema.parse({ email, password });
       } else if (activeTab === 'signup') {
@@ -60,7 +60,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
       } else if (activeTab === 'forgot') {
         forgotPasswordSchema.parse({ email });
       }
-      
+
       return true;
     } catch (error: any) {
       const fieldErrors: Record<string, string> = {};
@@ -74,11 +74,11 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
-    
+
     try {
       if (activeTab === 'signin') {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -133,11 +133,30 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
     }
   };
 
+  const handleSignIn = async (data: SignInForm) => {
+    try {
+      setErrors({});
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) throw error;
+
+      if (authData.user) {
+        onClose();
+        window.location.reload(); // Refresh to update auth state
+      }
+    } catch (error: any) {
+      setErrors({ general: error.message });
+    }
+  };
+
   if (!open) return null;
 
   return (
-    <div 
-      role="dialog" 
+    <div
+      role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
       className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-6"
@@ -148,7 +167,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
           {/* Form Section */}
           <div className="p-8">
             <h2 id="auth-modal-title" className="sr-only">Authentication</h2>
-            
+
             {/* Tab Navigation */}
             <div className="flex gap-2 mb-6">
               <button
@@ -314,7 +333,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
                     Continue with Apple
                   </button>
                 </div>
-                
+
                 <div className="mt-4 p-3 rounded border border-neutral-800 bg-neutral-900/30 text-sm text-neutral-400 flex items-center gap-2">
                   <span className="text-neutral-500">●</span>
                   Popup closed is a silent no-op.
@@ -348,7 +367,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
                 <span>Access: Cover Art, Memes, News, Gigs.</span>
               </div>
             </div>
-            
+
             <div className="mt-6 pt-6 border-t border-neutral-800 text-xs text-neutral-400">
               By continuing you agree to our Terms and Privacy.
             </div>
@@ -358,4 +377,3 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
     </div>
   );
 }
-
