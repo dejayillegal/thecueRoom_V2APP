@@ -77,8 +77,18 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
 
     try {
       if (activeTab === 'signin') {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        console.log('Attempting sign in with email:', email);
+        const { data, error } = await supabase.auth.signInWithPassword({ 
+          email: email.trim(), 
+          password 
+        });
+        
+        if (error) {
+          console.error('Sign in error details:', error);
+          throw error;
+        }
+        
+        console.log('Sign in successful:', data);
         // Handle successful sign in
         onClose();
         window.location.reload(); // Refresh to update auth state
@@ -112,7 +122,9 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
       
       // Provide more helpful messages for common errors
       if (error.message?.includes('Invalid login credentials')) {
-        errorMessage = 'Invalid email or password. Make sure the admin user has been created first.';
+        errorMessage = 'Invalid email or password. If you just created the admin user, try refreshing the page and signing in again. Make sure the password matches exactly what was set during creation.';
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and click the confirmation link before signing in.';
       }
       
       setErrors({ general: errorMessage });

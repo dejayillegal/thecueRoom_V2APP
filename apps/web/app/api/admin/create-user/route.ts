@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         {
           password,
           email_confirm: true,
+          email_confirmed_at: new Date().toISOString(),
           user_metadata: {
             role,
             updated_by: 'admin_setup'
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
         email,
         password,
         email_confirm: true,
+        email_confirmed_at: new Date().toISOString(),
         user_metadata: {
           role,
           created_by: 'admin_setup'
@@ -120,12 +122,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log('Admin user operation completed:', {
+      action: existingUser ? 'updated' : 'created',
+      userId: authData.user?.id,
+      email: authData.user?.email,
+      emailConfirmed: authData.user?.email_confirmed_at,
+      role
+    });
+
     return NextResponse.json({
       success: true,
       action: existingUser ? 'updated' : 'created',
       user: {
         id: authData.user?.id,
         email: authData.user?.email,
+        emailConfirmed: !!authData.user?.email_confirmed_at,
         role
       }
     });
