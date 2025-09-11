@@ -18,6 +18,17 @@
   body {
     @apply bg-[var(--bg)] text-white;
   }
+  
+  /* Remove default border radius from buttons and inputs */
+  button, input, select, textarea {
+    border-radius: 0;
+  }
+  
+  /* Header backdrop blur support */
+  .backdrop-blur-md {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
 }
 
 /* Force exact sizing without touching the internal SVG markup */

@@ -114,9 +114,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className={`flex items-center space-x-3 px-4 py-2 mx-2 rounded transition-colors ${
+                    className={`flex items-center space-x-3 px-4 py-3 mx-2 transition-colors ${
                       isActive
-                        ? 'bg-[#D1E231] text-black font-medium'
+                        ? 'bg-[#D1E231] text-black font-semibold'
                         : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
                     }`}
                   >
