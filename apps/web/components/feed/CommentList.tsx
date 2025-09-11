@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { getBrowserClient } from '@/lib/supabase-browser';
 import type { Comment } from './FeedCard';
 

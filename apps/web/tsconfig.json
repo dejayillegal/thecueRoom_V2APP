@@ -22,7 +22,8 @@
     "types": [
       "vitest/globals",
       "@testing-library/jest-dom"
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "next-env.d.ts",
@@ -30,5 +31,5 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", "out"]
+  "exclude": ["node_modules", ".next", "out", "../../node_modules/@vitejs/plugin-react/dist/index.d.ts"]
 }

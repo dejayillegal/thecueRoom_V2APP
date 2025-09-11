@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { expect, test } from 'vitest';
-import FeedCard, { FeedItem } from '../components/FeedCard';
+import FeedCard, { type FeedItem } from '../components/FeedCard';
 
 test('increments likes', () => {
   const item: FeedItem = {

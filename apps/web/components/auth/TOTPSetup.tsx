@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getBrowserClient } from '@/lib/supabase-browser';
 
@@ -45,7 +46,7 @@ export default function TOTPSetup() {
   return (
     <div className="space-y-4">
       {qr && (
-        <img src={`data:image/png;base64,${qr}`} alt="TOTP QR" className="mx-auto" />
+        <Image src={`data:image/png;base64,${qr}`} alt="TOTP QR" className="mx-auto" width={200} height={200} />
       )}
       <p className="text-sm text-white">Store your recovery codes safely.</p>
       <input

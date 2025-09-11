@@ -1,6 +1,6 @@
 'use client';
 
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -23,7 +23,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ error, errorInfo });
     
     // Log error to console in development
@@ -43,7 +43,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     window.location.href = '/';
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
@@ -55,7 +55,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-white mb-2">Something went wrong</h1>
               <p className="text-neutral-400 text-sm">
-                We've encountered an unexpected error. This has been logged and our team will investigate.
+                We&apos;ve encountered an unexpected error. This has been logged and our team will investigate.
               </p>
             </div>
             

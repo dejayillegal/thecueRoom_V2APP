@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler/jestSetup';
 import * as React from 'react';
-import { Image as RNImage } from 'react-native';
 
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'anon';
@@ -69,8 +68,8 @@ jest.mock('react-native-safe-area-context', () => {
 jest.mock('expo-image', () => {
   const React = jest.requireActual('react');
   const { Image: RNImage } = jest.requireActual('react-native');
-  const Img = React.forwardRef((props: any, ref) => React.createElement(RNImage, { ref, ...props }));
-  (Img as any).displayName = 'ExpoImageMock';
+  const Img = React.forwardRef((props: Record<string, unknown>, ref) => React.createElement(RNImage, { ref, ...props }));
+  (Img as React.ForwardRefExoticComponent<unknown>).displayName = 'ExpoImageMock';
   return { Image: Img, default: Img };
 });
 
@@ -103,7 +102,7 @@ jest.mock(
 
 // PlatformConstants shim for RN internals
 import { NativeModules as _NM } from 'react-native';
-(_NM as any).PlatformConstants = (_NM as any).PlatformConstants || { forceTouchAvailable: false };
+(_NM as Record<string, unknown>).PlatformConstants = (_NM as Record<string, unknown>).PlatformConstants || { forceTouchAvailable: false };
 
 // Silence NativeAnimatedHelper warnings
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -120,7 +119,7 @@ afterAll(() => {
 // Optional: soften noisy "not wrapped in act(...)" during async query polling in tests
 const _origError = console.error;
 beforeAll(() => {
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     const msg = String(args[0] ?? '');
     if (/not wrapped in act/.test(msg)) return; // ignore only this warning
     _origError(...args);

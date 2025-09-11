@@ -37,7 +37,7 @@ export async function handler(req: Request): Promise<Response> {
   if (!supabaseUrl || !supabaseKey) {
     return new Response("Missing env vars", { status: 500 });
   }
-  const supabase: any = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(supabaseUrl, supabaseKey);
   const { data: gigs } = await supabase.from("gigs").select();
   const { data: follows } = await supabase
     .from("follows")

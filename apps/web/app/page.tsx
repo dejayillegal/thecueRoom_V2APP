@@ -91,7 +91,7 @@ export default function Landing() {
                 <div>
                   <span className="text-[#D1E231] font-semibold">Kara Nova</span>
                   <span className="text-neutral-400"> · 2h — </span>
-                  <span className="text-neutral-300">"New set up on SC — jungle rollers recorded live in Mana Rainforest."</span>
+                  <span className="text-neutral-300">&ldquo;New set up on SC — jungle rollers recorded live in Mana Rainforest.&rdquo;</span>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -99,7 +99,7 @@ export default function Landing() {
                 <div>
                   <span className="text-[#D1E231] font-semibold">Ryan</span>
                   <span className="text-neutral-400"> · 4h — </span>
-                  <span className="text-neutral-300">"Looking for a lighting tech for Saturday's gig — DM me."</span>
+                  <span className="text-neutral-300">&ldquo;Looking for a lighting tech for Saturday&apos;s gig — DM me.&rdquo;</span>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -107,7 +107,7 @@ export default function Landing() {
                 <div>
                   <span className="text-[#D1E231] font-semibold">Sol</span>
                   <span className="text-neutral-400"> · 6h — </span>
-                  <span className="text-neutral-300">"Posted a new mix: Deep night drive at 128 BPM."</span>
+                  <span className="text-neutral-300">&ldquo;Posted a new mix: Deep night drive at 128 BPM.&rdquo;</span>
                 </div>
               </div>
             </div>
@@ -138,7 +138,7 @@ export default function Landing() {
               <div className="flex items-start gap-3">
                 <span className="w-6 h-6 bg-[#D1E231] text-black rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
                 <div>
-                  <p className="text-neutral-300">Tune your AI feed with a 'Why' explainer</p>
+                  <p className="text-neutral-300">Tune your AI feed with a &lsquo;Why&rsquo; explainer</p>
                 </div>
               </div>
             </div>

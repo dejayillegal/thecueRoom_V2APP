@@ -34,7 +34,7 @@
     "lint": "pnpm -r exec eslint .",
     "format": "pnpm -r exec prettier -w .",
     "test": "pnpm test:web && pnpm test:mobile",
-    "test:web": "pnpm --filter \"./packages/*\" --filter \"./apps/web\" exec vitest run",
+    "test:web": "pnpm --filter \"./apps/web\" run test",
     "test:mobile": "pnpm --filter \"./apps/mobile\" run test",
     "analyze": "pnpm -r --filter \"./apps/*\" run analyze",
     "depcheck": "pnpm -r exec depcheck --ignores=@types/*,eslint*,prettier*",

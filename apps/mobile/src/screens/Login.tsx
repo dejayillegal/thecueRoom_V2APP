@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import { supabase } from '../lib/supabase';
@@ -26,8 +27,8 @@ export default function Login() {
     setError(null);
     try {
       await supabase.auth.signInWithOAuth({ provider });
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
     }
   };
 

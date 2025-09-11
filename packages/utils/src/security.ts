@@ -30,7 +30,7 @@ export const cspHeaders = {
   },
   production: {
     'default-src': "'self'",
-    'script-src': "'self' https://vercel.live",
+    'script-src': "'self'",
     'style-src': "'self' https://fonts.googleapis.com",
     'img-src': "'self' data: https: blob:",
     'font-src': "'self' https://fonts.gstatic.com",
@@ -101,7 +101,10 @@ export const generateSecureToken = (length = 32): string => {
   }
   
   for (let i = 0; i < length; i++) {
-    result += chars[randomArray[i] % chars.length];
+    const arrayValue = randomArray[i];
+    if (arrayValue !== undefined) {
+      result += chars[arrayValue % chars.length];
+    }
   }
   
   return result;

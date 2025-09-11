@@ -25,7 +25,7 @@ export default function AdminPage() {
     const copy = [...playlists];
     const target = idx + dir;
     if (target < 0 || target >= copy.length) return;
-    [copy[idx], copy[target]] = [copy[target], copy[idx]];
+    [copy[idx], copy[target]] = [copy[target]!, copy[idx]!];
     setPlaylists(copy);
   };
   const addSource = () => {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { FlatList, View, Text, Button } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -77,7 +78,7 @@ export default function Feed() {
     const channel = supabase
       .channel('posts')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, (payload) => {
-        queryClient.setQueryData(['posts'], (old: any) => {
+        queryClient.setQueryData(['posts'], (old: { pages: Post[][] } | undefined) => {
           if (!old) return old;
           const copy = [...old.pages];
           copy[0] = [payload.new as Post, ...copy[0]];

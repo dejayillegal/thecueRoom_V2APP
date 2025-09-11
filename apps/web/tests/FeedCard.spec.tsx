@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import FeedCard, { FeedItem } from '../components/feed/FeedCard';
+import FeedCard, { type FeedItem } from '../components/feed/FeedCard';
 import { vi } from 'vitest';
 
 vi.mock('../lib/supabase-browser', () => ({

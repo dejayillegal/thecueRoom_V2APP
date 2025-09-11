@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import localforage from 'localforage';
-import FeedCard, { FeedItem } from '@/components/feed/FeedCard';
+import FeedCard, { type FeedItem } from '@/components/feed/FeedCard';
 import { getBrowserClient } from '@/lib/supabase-browser';
 import { score } from '@/lib/ranking';
 

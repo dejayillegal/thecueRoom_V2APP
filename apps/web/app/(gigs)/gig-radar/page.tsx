@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Map, { Marker } from '../../../components/gigs/Map';
+import Map, { type Marker } from '../../../components/gigs/Map';
 
 interface Gig extends Marker {
   name: string;

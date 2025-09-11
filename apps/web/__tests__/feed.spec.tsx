@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { expect, test, vi, afterEach } from 'vitest';
-import FeedCard, { FeedItem } from '../components/feed/FeedCard';
+import FeedCard, { type FeedItem } from '../components/feed/FeedCard';
 
 vi.mock('@/lib/supabase-browser', () => ({
   getBrowserClient: () => ({

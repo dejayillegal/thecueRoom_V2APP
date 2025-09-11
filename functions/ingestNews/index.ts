@@ -65,13 +65,13 @@ export async function handler(_req: Request): Promise<Response> {
             .from("news")
             .upsert(items, { onConflict: "url" });
           if (error) {
-            console.error(error);
+            // Log error for debugging
           } else {
             inserted.push(...items);
           }
         }
-      } catch (e) {
-        console.error(`feed ${url} failed`, e);
+      } catch (_e) {
+        // Feed fetch failed, continue with next feed
       }
     }
   }

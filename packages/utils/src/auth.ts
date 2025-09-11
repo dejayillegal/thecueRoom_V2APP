@@ -95,9 +95,10 @@ export const generateVerificationChallenge = (): string => {
     'Describe your music production setup',
     'Name 3 influences in underground electronic music',
     'Share a recent track you have been working on',
-  ];
-  
-  return challenges[Math.floor(Math.random() * challenges.length)] ?? challenges[0];
+  ] as const;
+
+  const idx = Math.floor(Math.random() * challenges.length);
+  return challenges[idx] ?? 'Create a 30-second techno track snippet';
 };
 
 /**

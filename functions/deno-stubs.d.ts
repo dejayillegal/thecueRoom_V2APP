@@ -18,12 +18,23 @@ declare module "std/testing/asserts.ts" {
 }
 
 declare module "npm:@supabase/supabase-js@2.42.0" {
-  export function createClient(url: string, key: string): any;
+  export function createClient(url: string, key: string): SupabaseClient;
+  export interface SupabaseClient {
+    from: (table: string) => QueryBuilder;
+    [key: string]: unknown;
+  }
+  export interface QueryBuilder {
+    select: (columns?: string) => QueryBuilder;
+    insert: (data: unknown) => QueryBuilder;
+    upsert: (data: unknown, options?: { onConflict: string }) => QueryBuilder;
+    eq: (column: string, value: unknown) => QueryBuilder;
+    [key: string]: unknown;
+  }
 }
 
 declare module "npm:fast-xml-parser@4.2.7" {
   export class XMLParser {
     constructor(opts?: unknown);
-    parse(xml: string): any;
+    parse(xml: string): Record<string, unknown>;
   }
 }
