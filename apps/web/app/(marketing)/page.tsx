@@ -11,6 +11,7 @@ import FeedPreview from '@/components/landing/FeedPreview';
 import HowItWorks from '@/components/landing/HowItWorks';
 import CtaBand from '@/components/landing/CtaBand';
 import Footer from '@/components/landing/Footer';
+import FooterGlow from '@/components/landing/FooterGlow';
 import { SessionProvider, useSession } from '@/app/providers';
 import './_styles.css';
 
@@ -86,6 +87,7 @@ function Content() {
         </div>
         <CtaBand onJoinClick={() => setOpen(true)} />
       </main>
+      <FooterGlow />
       <Footer />
       {!session && showSticky && (
         <button
