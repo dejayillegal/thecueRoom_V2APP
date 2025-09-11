@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
 import UserMenu from '@/components/auth/UserMenu';
 import LoginDialog from '@/components/auth/LoginDialog';
@@ -17,8 +18,23 @@ export const dynamic = 'force-dynamic';
 
 function Content() {
   const { session } = useSession();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Redirect authenticated users to appropriate page
+  useEffect(() => {
+    if (session?.user && !isRedirecting) {
+      setIsRedirecting(true);
+      const userRole = session.user?.user_metadata?.role;
+      if (userRole === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace('/feed');
+      }
+    }
+  }, [session, router, isRedirecting]);
 
   useEffect(() => {
     function onScroll() {
@@ -27,6 +43,11 @@ function Content() {
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Don't render content while redirecting authenticated users
+  if (session?.user && isRedirecting) {
+    return <div className="min-h-screen bg-[#0B0B0B]" />;
+  }
 
   return (
     <>
