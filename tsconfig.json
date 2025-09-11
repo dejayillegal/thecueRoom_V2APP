@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "useUnknownInCatchVariables": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
+    "composite": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": [],
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./packages/schemas" },
+    { "path": "./packages/types" },
+    { "path": "./packages/utils" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/db" }
+  ]
+}

@@ -1,402 +1,173 @@
 name: CI
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  push: { branches: [ main, develop ] }
+  pull_request: { branches: [ main, develop ] }
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  NODE_VERSION: 20.x
-  PNPM_VERSION: 9
+  NEXT_TELEMETRY_DISABLED: '1'
+  NODE_ENV: production
+  NEXT_PUBLIC_APP_NAME: thecueRoom
+  NEXT_PUBLIC_ENV: ci
 
 jobs:
-  lockfile-check:
-    name: Lockfile Check
+  setup:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check for conflicting lockfiles
-        run: |
-          echo "Checking for conflicting lockfiles..."
-          conflicting_files=""
-          
-          if [ -f "package-lock.json" ]; then
-            conflicting_files="${conflicting_files} package-lock.json"
-          fi
-          
-          if [ -f "yarn.lock" ]; then
-            conflicting_files="${conflicting_files} yarn.lock"
-          fi
-          
-          if [ -n "$conflicting_files" ]; then
-            echo "❌ Conflicting lockfiles found:$conflicting_files"
-            echo "Please remove them and use only pnpm-lock.yaml"
-            exit 1
-          fi
-          
-          if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml not found"
-            echo "Please run 'pnpm install' to generate it"
-            exit 1
-          fi
-          
-          echo "✅ pnpm-lock.yaml found, no conflicting lockfiles"
-
-  install:
-    name: Install Dependencies
-    runs-on: ubuntu-latest
-    needs: lockfile-check
     outputs:
-      cache-key: ${{ steps.cache-key.outputs.cache-key }}
+      has_playwright: ${{ steps.detect.outputs.has_playwright }}
+      has_web: ${{ steps.detect.outputs.has_web }}
+      is_export: ${{ steps.detect.outputs.is_export }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Generate cache key
-        id: cache-key
-        run: echo "cache-key=pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
-
-      - name: Cache pnpm store
+      - uses: actions/checkout@v4
+      - name: Lockfile discipline (pnpm only)
+        run: |
+          if [ -f package-lock.json ] || [ -f yarn.lock ]; then
+            echo "Remove package-lock.json / yarn.lock. Use pnpm-lock.yaml only."
+            exit 1
+          fi
+          if [ ! -f pnpm-lock.yaml ]; then echo "Generating pnpm-lock.yaml"; fi
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - name: Install (create lockfile if missing)
+        run: pnpm install --frozen-lockfile=false
+      - name: Detect projects
+        id: detect
+        run: |
+          has_web="false"; [ -d "apps/web" ] && has_web="true"
+          has_pw="false"; ls -1 **/playwright.config.* >/dev/null 2>&1 && has_pw="true"
+          is_export="false"; grep -R "output:\s*'export'" apps/web/next.config.* >/dev/null 2>&1 && is_export="true"
+          echo "has_web=$has_web" >> $GITHUB_OUTPUT
+          echo "has_playwright=$has_pw" >> $GITHUB_OUTPUT
+          echo "is_export=$is_export" >> $GITHUB_OUTPUT
+      - name: Cache turbo (optional)
         uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
-          key: ${{ steps.cache-key.outputs.cache-key }}
-          restore-keys: |
-            pnpm-${{ runner.os }}-
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ steps.cache-key.outputs.cache-key }}
-
-  typecheck:
-    name: Type Check
+  verify:
     runs-on: ubuntu-latest
-    needs: install
+    needs: setup
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ needs.install.outputs.cache-key }}
-          fail-on-cache-miss: true
-
-      - name: Run type checking
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
         run: pnpm typecheck
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ needs.install.outputs.cache-key }}
-          fail-on-cache-miss: true
-
-      - name: Run linting
+      - name: Lint (no warnings)
         run: pnpm lint
-
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ needs.install.outputs.cache-key }}
-          fail-on-cache-miss: true
-
-      - name: Run unit tests
+      - name: Unit tests
         run: pnpm test
+      - name: Dependency hygiene (strict)
+        run: pnpm depcheck
+      - name: Unused files (strict)
+        run: pnpm unused
 
   e2e:
-    name: E2E Tests
+    if: needs.setup.outputs.has_playwright == 'true'
     runs-on: ubuntu-latest
-    needs: [install, typecheck, lint, test]
-    if: hashFiles('apps/web/e2e/**') != '' || hashFiles('apps/web/playwright.config.ts') != ''
+    needs: [setup, verify]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ needs.install.outputs.cache-key }}
-          fail-on-cache-miss: true
-
-      - name: Setup safe CI environment for web build
-        working-directory: apps/web
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - run: npx playwright install --with-deps
+      - name: Build & start web (if present)
         run: |
-          cp .env.example .env.ci || echo "No .env.example found, creating minimal .env.ci"
-          cat > .env.ci << EOF
-          NEXT_PUBLIC_APP_NAME=thecueRoom
-          NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy_anon_key_for_ci
-          NEXT_TELEMETRY_DISABLED=1
-          SPOTIFY_CLIENT_ID=dummy_spotify_client_id
-          SPOTIFY_CLIENT_SECRET=dummy_spotify_client_secret
-          NEXT_PUBLIC_BASE_PATH=
-          NEXT_PUBLIC_SITE_URL=http://localhost:3000
-          EOF
+          if [ -d "apps/web" ]; then
+            pnpm --filter ./apps/web run build
+            pnpm --filter ./apps/web run start &>/dev/null &
+            sleep 3
+          fi
+      - name: Run Playwright
+        run: npx playwright test --reporter=line
 
-      - name: Install Playwright browsers
-        working-directory: apps/web
-        run: npx playwright install --with-deps
-
-      - name: Run E2E tests
-        working-directory: apps/web
-        env:
-          ENV_FILE: .env.ci
-        run: pnpm e2e:ci
-
-  build-web:
-    name: Build Web App
+  build_web:
+    if: needs.setup.outputs.has_web == 'true'
     runs-on: ubuntu-latest
-    needs: [install, typecheck, lint, test]
+    needs: [setup, verify]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ needs.install.outputs.cache-key }}
-          fail-on-cache-miss: true
-
-      - name: Setup safe CI environment for web build
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - name: Build web
         working-directory: apps/web
-        run: |
-          cp .env.example .env.ci || echo "No .env.example found, creating minimal .env.ci"
-          cat > .env.ci << EOF
-          NEXT_PUBLIC_APP_NAME=thecueRoom
-          NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-          NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy_anon_key_for_ci
-          NEXT_TELEMETRY_DISABLED=1
-          SPOTIFY_CLIENT_ID=dummy_spotify_client_id
-          SPOTIFY_CLIENT_SECRET=dummy_spotify_client_secret
-          NEXT_PUBLIC_BASE_PATH=
-          NEXT_PUBLIC_SITE_URL=http://localhost:3000
-          EOF
-
-      - name: Build web application
-        working-directory: apps/web
-        env:
-          NODE_ENV: production
-        run: |
-          # Source the CI environment
-          set -a
-          source .env.ci
-          set +a
-          pnpm build
-
-      - name: Generate bundle analysis
-        working-directory: apps/web
-        continue-on-error: true
-        env:
-          NODE_ENV: production
-        run: |
-          # Source the CI environment
-          set -a
-          source .env.ci
-          set +a
-          pnpm analyze || echo "Bundle analysis failed, continuing..."
-
-      - name: Upload build artifacts
+        run: pnpm run build
+      - name: Upload bundle artifacts
         uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: |
-            apps/web/.next/
-            apps/web/out/
-          retention-days: 7
+            apps/web/.next
+            apps/web/out
+            apps/web/reports
+          if-no-files-found: warn
 
-      - name: Upload bundle analysis
-        uses: actions/upload-artifact@v4
-        if: hashFiles('apps/web/.next/analyze/*') != ''
-        with:
-          name: bundle-analysis
-          path: apps/web/.next/analyze/
-          retention-days: 30
-
-  dep-hygiene:
-    name: Dependency Hygiene
+  deploy_web_export:
+    name: Deploy Web (GitHub Pages, export)
+    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: install
+    needs: [build_web]
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - name: Export static build
+        working-directory: apps/web
+        env:
+          STATIC_EXPORT: '1'
+        run: pnpm run build:static
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          path: ./apps/web/out
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-          run_install: false
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            apps/*/node_modules
-            packages/*/node_modules
-            functions/node_modules
-          key: ${{ needs.install.outputs.cache-key }}
-          fail-on-cache-miss: true
-
-      - name: Check for unused dependencies
-        run: pnpm depcheck
-
-      - name: Check for unused files (if script exists)
-        run: |
-          if [ -f "scripts/find-unused.js" ]; then
-            pnpm unused
-          else
-            echo "No unused files script found, skipping"
-          fi
-
-  all-checks:
-    name: All Checks Complete
+  deploy_web_vercel:
+    name: Deploy Web (Vercel, dynamic)
+    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export != 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [lockfile-check, install, typecheck, lint, test, build-web, dep-hygiene]
-    if: always()
+    needs: [build_web]
+    environment:
+      name: production
     steps:
-      - name: Check all jobs status
-        run: |
-          echo "Lockfile check: ${{ needs.lockfile-check.result }}"
-          echo "Install: ${{ needs.install.result }}"
-          echo "Typecheck: ${{ needs.typecheck.result }}"
-          echo "Lint: ${{ needs.lint.result }}"
-          echo "Test: ${{ needs.test.result }}"
-          echo "Build web: ${{ needs.build-web.result }}"
-          echo "Dep hygiene: ${{ needs.dep-hygiene.result }}"
-          
-          if [[ "${{ needs.lockfile-check.result }}" == "success" && 
-                "${{ needs.install.result }}" == "success" && 
-                "${{ needs.typecheck.result }}" == "success" && 
-                "${{ needs.lint.result }}" == "success" && 
-                "${{ needs.test.result }}" == "success" && 
-                "${{ needs.build-web.result }}" == "success" && 
-                "${{ needs.dep-hygiene.result }}" == "success" ]]; then
-            echo "✅ All required checks passed!"
-          else
-            echo "❌ Some checks failed"
-            exit 1
-          fi
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./apps/web

@@ -1,0 +1,459 @@
+thecueRoom: Full Code Cleanup + CI/Deploy Fix + V1/V2 Product Implementation (No Skips, No TODOs)
+
+Role: You are Staff Engineer + Release/Build Captain. Deliver a production-grade monorepo for thecueRoom (Web + Mobile + Backend), fix all GitHub Actions issues (CI + Deploy), and land a single PR that meets every gate below. You must not skip or stub anything. If something is ambiguous, pick the most robust, conventional choice and proceed.
+
+0) Product Context — Non-Negotiables
+
+App: thecueRoom — closed underground techno/house artist community (Bangalore-first).
+
+Platforms: Web (Next.js 15, App Router), Mobile (Expo React Native), Backend (Supabase with Edge Functions), shared packages (Drizzle ORM + Zod).
+
+Logo: Canonical animated logo.svg (anchored blink). Use verbatim; no duplicates or geometry/animation edits.
+
+Culture/Rules: No mainstream/self-promo. Strict moderation (AI + human). Fun, helpful, knowledge-centric.
+
+1) Outcomes (All Must Be Achieved)
+
+Deep Code Cleanup & Modernization
+
+Remove ugly/random/unused code, demo stubs, dead assets; consolidate to a single logo.svg.
+
+Enforce TS strict everywhere; ESLint (typescript-eslint, import, jsx-a11y, react-hooks, unused-imports), Prettier, Conventional Commits.
+
+Normalize imports via path aliases; extract business logic into pure packages/utils with unit tests.
+
+V1 Implementation
+
+Auth & Roles: Email + WebAuthn/Passkeys; roles artist|moderator|admin. Artist verification state machine (AI score + human approval).
+
+Profiles: Bio, socials, genres, Gig Radar (Bangalore) on profile; one account per artist enforced.
+
+Community Feed: Posts, comments, reactions, moderation queue & rule engine.
+
+Curated News: Edge Function to ingest RSS → normalize → dedupe → tag techno/house only.
+
+Creative: AI meme tool (client templates + captions), Cover-art generator (client-first; server job hook optional).
+
+Playlists: Weekly Spotify techno/house playlist embeds + metadata sync.
+
+Admin Console: Approvals/bans, feature content, manage sources/playlists/gigs; audit every action.
+
+V2 Implementation
+
+Personalized Newsletter (weekly) from preferences.
+
+Advanced Moderation: toxicity/NSFW/spam scoring → auto-flag thresholds + human review.
+
+Gig Radar++: Filters (date/venue), source dedupe, ICS export.
+
+Performance: Bundle code-split, image/font optimize, analyzer report; RN Hermes + inlineRequires.
+
+Observability: structured logs, trace IDs for Edge Functions, error reporting, audit trails.
+
+CI/Deploy — GitHub Actions Green
+
+Single pnpm monorepo pipeline on Node 20.x: install → typecheck → lint → unit tests → (auto) Playwright E2E if config present → Next build → artifacts.
+
+Lockfile discipline: only pnpm-lock.yaml. Generate once if missing.
+
+Deploy (Web) supports two paths:
+
+Static export (output: 'export') → publish to GitHub Pages (gh-pages branch).
+
+Dynamic (default) → deploy via Vercel CLI using secrets (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID).
+
+Build must succeed with safe CI env vars (fail only if a true secret is required and clearly reported).
+
+Docs & Reports
+
+CHANGELOG, Admin runbook, Edge Functions runbook, Moderation policy.
+
+Bundle analyzer report, coverage summary, deleted files & depcheck reports.
+
+2) Monorepo Layout (Create/Normalize)
+apps/
+  web/        # Next.js 15 (App Router), Tailwind, RSC where stable
+  mobile/     # Expo RN, Hermes, react-native-svg
+packages/
+  db/         # Drizzle ORM schemas + migrations (Postgres)
+  types/      # Zod schemas + inferred TS types
+  ui/         # shared headless + shadcn/ui components
+  utils/      # pure functions, services, formatters
+supabase/
+  functions/  # ingestNews, newsletterWeekly, moderationGuard, gigSyncBlr, artistVerify
+  seed/
+.github/workflows/ci.yml
+scripts/
+
+
+Root toolchain
+
+"packageManager": "pnpm@9".
+
+Strict TS configs (noUncheckedIndexedAccess, exactOptionalPropertyTypes, useUnknownInCatchVariables, verbatimModuleSyntax).
+
+ESLint/Prettier at root (no warnings allowed).
+
+Commitlint (Conventional).
+
+Scripts (root package.json)
+
+{
+  "scripts": {
+    "bootstrap": "pnpm install && pnpm -r run build:types || true",
+    "typecheck": "pnpm -r exec tsc -b",
+    "lint": "pnpm -r exec eslint .",
+    "format": "pnpm -r exec prettier -w .",
+    "test": "pnpm -r exec vitest run",
+    "analyze": "pnpm -r --filter \"./apps/*\" run analyze",
+    "depcheck": "pnpm -r exec depcheck --ignores=@types/*,eslint*,prettier*",
+    "unused": "node scripts/find-unused.js",
+    "ci": "pnpm bootstrap && pnpm typecheck && pnpm lint && pnpm test"
+  }
+}
+
+
+Find unused script (create scripts/find-unused.js) — fail if leftovers.
+
+Search **/*.{ts,tsx,js,jsx,css,scss,svg,png,jpg,jpeg,gif} (ignore node_modules/.next/dist/build/coverage).
+
+Always keep apps/web/public/logo.svg.
+
+Print & exit 1 when found.
+
+3) Design System, UI/UX Flow & Motion
+
+Tokens
+
+Primary Lime: #D1E231 (brand lime).
+
+Background: #0B0B0B; Surface: #141414; Text: #EDEDED; Accent: deep purple #5B3AA3.
+
+Fonts: Inter (UI), Space Grotesk (display), Source Code Pro (mono).
+
+Radius: 16/20/24; shadow: soft, layered; grid: 8px base.
+
+Flows
+
+Web routes: /, /feed, /creative, /news, /playlists, /gigs, /profile/[handle], /admin.
+
+Mobile stacks: Feed, Creative, News, Playlists, Gigs, Profile.
+
+Motion (accessible)
+
+Use prefers-reduced-motion gates.
+
+Micro-interactions (hover/focus/press) ≤ 200ms, ease-out; page transitions 200-300ms.
+
+Logo blink comes exclusively from canonical logo.svg. No alternative animations.
+
+Optional Lottie for subtle loaders; no blocking animations.
+
+A11y
+
+Keyboard nav, focus rings, aria labels, color-contrast AA+ for text.
+
+4) Data Model (Drizzle + Zod)
+
+Tables (with relations/indexes & Zod mirrors):
+users, artists, profiles, gigs, posts, comments, reactions, news_items, playlists, tracks, verifications, moderation_flags, newsletter_prefs, audit_logs.
+
+Constraints: Single artist account; referential integrity; enum types for roles/genres/categories; created_at/updated_at triggers.
+
+5) Edge Functions (Supabase) — Must Ship & Be Tested
+
+ingestNews: Fetch RSS → normalize → hash-dedupe (title+source+date±fuzz) → map categories (techno/house only).
+
+newsletterWeekly: Segment by newsletter_prefs → render template → send via provider adapter (mock + real).
+
+moderationGuard: Score toxicity/NSFW/spam; flag above threshold; write moderation_flags; queue for human review.
+
+gigSyncBlr: Aggregate Bangalore sources → normalize → dedupe → searchable index; expose ICS generator.
+
+artistVerify: Webhook to persist AI score & human decision transitions (state machine with audit logs).
+
+Observability: structured logs, request IDs, error boundaries.
+
+6) Testing Requirements
+
+Vitest for units — utils/services, verification machine, ingestion parsers, moderation scoring.
+
+React Testing Library for critical UI.
+
+Playwright auto-enabled if playwright.config.* exists; otherwise skip.
+
+Targets: coverage ≥ 80% apps, 90% packages. Add type-coverage with threshold ≥ 90% packages.
+
+7) CI & Deploy (Fix All GitHub Actions Issues)
+
+Create/replace .github/workflows/ci.yml with this drop-in (supports export → GitHub Pages or dynamic → Vercel):
+
+name: CI
+
+on:
+  push: { branches: [ main, develop ] }
+  pull_request: { branches: [ main, develop ] }
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+  NODE_ENV: production
+  NEXT_PUBLIC_APP_NAME: thecueRoom
+  NEXT_PUBLIC_ENV: ci
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has_playwright: ${{ steps.detect.outputs.has_playwright }}
+      has_web: ${{ steps.detect.outputs.has_web }}
+      is_export: ${{ steps.detect.outputs.is_export }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lockfile discipline (pnpm only)
+        run: |
+          if [ -f package-lock.json ] || [ -f yarn.lock ]; then
+            echo "Remove package-lock.json / yarn.lock. Use pnpm-lock.yaml only."
+            exit 1
+          fi
+          if [ ! -f pnpm-lock.yaml ]; then echo "Generating pnpm-lock.yaml"; fi
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - name: Install (create lockfile if missing)
+        run: pnpm install --frozen-lockfile=false
+      - name: Detect projects
+        id: detect
+        run: |
+          has_web="false"; [ -d "apps/web" ] && has_web="true"
+          has_pw="false"; ls -1 **/playwright.config.* >/dev/null 2>&1 && has_pw="true"
+          is_export="false"; grep -R "output:\s*'export'" apps/web/next.config.* >/dev/null 2>&1 && is_export="true"
+          echo "has_web=$has_web" >> $GITHUB_OUTPUT
+          echo "has_playwright=$has_pw" >> $GITHUB_OUTPUT
+          echo "is_export=$is_export" >> $GITHUB_OUTPUT
+      - name: Cache turbo (optional)
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Lint (no warnings)
+        run: pnpm lint
+      - name: Unit tests
+        run: pnpm test
+      - name: Dependency hygiene (strict)
+        run: pnpm depcheck
+      - name: Unused files (strict)
+        run: pnpm unused
+
+  e2e:
+    if: needs.setup.outputs.has_playwright == 'true'
+    runs-on: ubuntu-latest
+    needs: [setup, verify]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - run: npx playwright install --with-deps
+      - name: Build & start web (if present)
+        run: |
+          if [ -d "apps/web" ]; then
+            pnpm --filter ./apps/web run build
+            pnpm --filter ./apps/web run start &>/dev/null &
+            sleep 3
+          fi
+      - name: Run Playwright
+        run: npx playwright test --reporter=line
+
+  build_web:
+    if: needs.setup.outputs.has_web == 'true'
+    runs-on: ubuntu-latest
+    needs: [setup, verify]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - name: Build web
+        working-directory: apps/web
+        run: pnpm run build
+      - name: Upload bundle artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: |
+            apps/web/.next
+            apps/web/out
+            apps/web/reports
+          if-no-files-found: warn
+
+  deploy_web_export:
+    name: Deploy Web (GitHub Pages, export)
+    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export == 'true'
+    runs-on: ubuntu-latest
+    needs: [build_web]
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x, cache: 'pnpm' }
+      - uses: pnpm/action-setup@v4
+        with: { version: 9, run_install: false }
+      - run: pnpm install --frozen-lockfile
+      - name: Export static
+        working-directory: apps/web
+        run: pnpm run build && pnpm exec next export
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/web/out
+          force_orphan: true
+
+  deploy_web_vercel:
+    name: Deploy Web (Vercel, dynamic)
+    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export != 'true'
+    runs-on: ubuntu-latest
+    needs: [build_web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.x }
+      - name: Vercel Deploy
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+
+Secrets needed (when dynamic deploy): VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (Repository → Settings → Secrets and variables → Actions).
+For GitHub Pages export: no extra secrets; ensure next.config includes output: 'export' and proper assetPrefix/basePath if using a project subpath.
+
+8) Cleanup & Single-Source Assets
+
+Delete all duplicate logos and unused PNG/SVGs. Ensure every reference uses apps/web/public/logo.svg.
+
+Replace raw <img> with next/image (web) and react-native-svg or Image (mobile).
+
+Run pnpm depcheck & remove unused deps.
+
+Run pnpm unused until no files reported.
+
+9) Acceptance Gates (Hard Stop Conditions)
+
+Build Gates
+
+pnpm typecheck = 0 errors.
+
+pnpm lint = 0 warnings/errors.
+
+pnpm test passes; coverage: ≥80% apps, ≥90% packages.
+
+Web build succeeds.
+
+GitHub Actions green on PR.
+
+Feature Gates
+
+Auth with Email + WebAuthn, role guards; artist verification machine tested.
+
+Feed CRUD with moderation queue/rules enforced.
+
+News ingest writes deduped, categorized items; UI filters techno/house.
+
+Creative meme + cover-art tools work (export/render).
+
+Playlists weekly metadata sync + UI embeds.
+
+Gigs ingested (BLR), filters OK, ICS validated.
+
+Newsletter weekly renders by prefs (mock + adapter), logs & audits.
+
+Observability: structured logs, trace IDs; admin actions audited.
+
+Cleanup Gates
+
+pnpm depcheck → no unused deps.
+
+pnpm unused → no unused files.
+
+Exactly one logo.svg.
+
+Docs
+
+CHANGELOG, Admin runbook, Edge Functions runbook, Moderation policy.
+
+Bundle analyzer report; coverage summary; deletion/dep reports.
+
+10) Commit & PR Plan (Conventional Commits)
+
+chore(repo): scaffold pnpm workspace, strict ts/eslint/prettier/commitlint
+
+feat(db): drizzle schemas + zod types + migrations
+
+feat(auth): email + webauthn and role guards; verification machine
+
+feat(feed): posts/comments/reactions + moderation queue
+
+feat(news): rss ingest edge function + ui categories
+
+feat(creative): meme and cover-art tools (client-first)
+
+feat(playlists): weekly sync + embeds
+
+feat(gigs): blr ingestion + filters + ics export
+
+feat(newsletter): weekly personalized digest + prefs
+
+chore(ci): add pnpm github actions (verify/build/deploy)
+
+refactor(assets): canonicalize logo.svg; remove duplicates
+
+perf(web|mobile): analyzer, hermes, inlineRequires
+
+test: add unit/ui/e2e and type-coverage
+
+docs: readme + runbooks + moderation policy + reports
+
+Open PR: “V1+V2 Complete: Cleanup, CI+Deploy, Advanced UX/Motion — No TODOs”
+Include: green CI link, feature checklist, artifacts paths, coverage/bundle reports, deletion list, runbooks.
+
+11) Guardrails
+
+Never commit secrets. Provide .env.example and .env.ci safe defaults.
+
+No breaking DB/API without migration + tests + docs.
+
+Respect prefers-reduced-motion.
+
+Do not alter the logo.svg geometry/animation.
