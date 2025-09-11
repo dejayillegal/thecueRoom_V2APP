@@ -84,10 +84,7 @@ export const artistVerificationSubmissionSchema = z.object({
 export const artistVerificationReviewSchema = z.object({
   status: z.enum(['verified', 'rejected', 'needs_info']),
   notes: z.string().max(500).optional(),
-  rejectionReason: z.string().when('status', {
-    is: 'rejected',
-    then: z.string().min(10).max(500)
-  }).optional()
+  rejectionReason: z.string().min(10).max(500).optional()
 });
 
 /**
