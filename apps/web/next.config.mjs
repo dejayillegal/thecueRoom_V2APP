@@ -1,35 +1,15 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-const isStaticExport = Boolean(process.env.STATIC_EXPORT);
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-  openAnalyzer: false,
-});
+const isGhPages = process.env.GITHUB_PAGES === 'true';
+const repoName = process.env.GHP_REPO_BASENAME || '';
 
 const nextConfig = {
-  ...(isStaticExport ? { output: "export", images: { unoptimized: true } } : {}),
-  basePath,
-  assetPrefix: basePath ? `${basePath}/` : undefined,
-  outputFileTracingRoot: process.cwd(),
-  // Allow all hosts for Replit development environment
-  experimental: {
-    esmExternals: true
-  },
-  // Allow cross-origin requests for Replit proxy
-  allowedDevOrigins: [process.env.REPLIT_DEV_DOMAIN || "*"],
-  // Configure dev server to accept proxy requests
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-      }
-    }
-    return config
-  }
+  output: 'export',
+  images: { unoptimized: true },
+  ...(isGhPages && repoName
+    ? { basePath: `/${repoName}`, assetPrefix: `/${repoName}/` }
+    : {})
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default bundleAnalyzer({ enabled: process.env.ANALYZE === 'true', openAnalyzer: false })(nextConfig);
