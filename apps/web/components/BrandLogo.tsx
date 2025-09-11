@@ -1,3 +1,4 @@
+
 'use client';
 
 /**
@@ -6,7 +7,7 @@
  * Any modifications will break the logo verification system.
  */
 const RAW_LOGO_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" aria-label="thecueRoom logo with anchored blink" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" height="40" aria-label="thecueRoom logo with anchored blink" class="h-10 w-auto">
   <style>
     #blinkPath { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 10s infinite; }
     @keyframes blink {
