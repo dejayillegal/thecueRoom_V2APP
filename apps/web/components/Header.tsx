@@ -17,7 +17,7 @@ export default function Header() {
           </Link>
           <button
             onClick={() => setOpen(true)}
-            className="rounded bg-[#D1E231] px-4 py-2 text-sm font-semibold text-black hover:bg-[#C2D629] transition-colors"
+            className="rounded bg-[#D1FF3D] px-4 py-2 text-sm font-semibold text-black hover:bg-[#C2D629] transition-colors"
           >
             Login / Sign Up
           </button>

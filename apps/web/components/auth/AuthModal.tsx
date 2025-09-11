@@ -156,7 +156,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
                 onClick={() => setActiveTab('signin')}
                 className={`rounded px-3 py-1.5 text-sm font-bold transition-colors ${
                   activeTab === 'signin'
-                    ? 'bg-lime-300 text-black'
+                    ? 'bg-[#D1FF3D] text-black'
                     : 'border border-neutral-700 text-neutral-200 hover:border-neutral-600'
                 }`}
               >
@@ -167,7 +167,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
                 onClick={() => setActiveTab('signup')}
                 className={`rounded px-3 py-1.5 text-sm transition-colors ${
                   activeTab === 'signup'
-                    ? 'bg-lime-300 text-black font-bold'
+                    ? 'bg-[#D1FF3D] text-black font-bold'
                     : 'border border-neutral-700 text-neutral-200 hover:border-neutral-600'
                 }`}
               >
@@ -178,7 +178,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
                 onClick={() => setActiveTab('forgot')}
                 className={`rounded px-3 py-1.5 text-sm transition-colors ${
                   activeTab === 'forgot'
-                    ? 'bg-lime-300 text-black font-bold'
+                    ? 'bg-[#D1FF3D] text-black font-bold'
                     : 'border border-neutral-700 text-neutral-200 hover:border-neutral-600'
                 }`}
               >
@@ -270,7 +270,7 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
                 <button
                   type="submit"
                   disabled={loading}
-                  className="rounded bg-lime-300 px-6 py-2 font-semibold text-black hover:bg-lime-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="rounded bg-[#D1FF3D] px-6 py-2 font-semibold text-black hover:bg-[#C2D629] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? 'Loading...' : 'Continue'}
                 </button>
