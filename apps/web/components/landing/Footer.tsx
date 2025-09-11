@@ -4,6 +4,7 @@ const columns = [
   {
     title: 'Product',
     links: [
+      { label: 'Overview', href: '#' },
       { label: 'Features', href: '#' },
       { label: 'Pricing', href: '#' },
     ],
@@ -12,7 +13,8 @@ const columns = [
     title: 'Community',
     links: [
       { label: 'Feed', href: '/feed' },
-      { label: 'Discord', href: '#' },
+      { label: 'Gig Radar', href: '#' },
+      { label: 'Playlists', href: '#' },
     ],
   },
   {
@@ -25,8 +27,9 @@ const columns = [
   {
     title: 'Social',
     links: [
-      { label: 'Twitter', href: '#' },
       { label: 'Instagram', href: '#' },
+      { label: 'SoundCloud', href: '#' },
+      { label: 'YouTube', href: '#' },
     ],
   },
 ];
@@ -44,7 +47,7 @@ export default function Footer() {
           </p>
           <p className="mt-1 text-[10px] text-muted">No spam. Unsubscribe anytime.</p>
           <p className="mt-4 text-xs text-muted">
-            © TheCueRoom {new Date().getFullYear()} – All rights reserved.
+            © TheCueRoom. Built for serious techno & house artists.
           </p>
         </div>
         <nav className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4">

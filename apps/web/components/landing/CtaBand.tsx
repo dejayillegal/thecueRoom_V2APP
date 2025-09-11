@@ -15,13 +15,13 @@ export default function CtaBand({ onJoinClick }: { onJoinClick: () => void }) {
             onClick={onJoinClick}
             className="rounded bg-lime px-6 py-3 font-bold text-black transition-transform hover:scale-105 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime"
           >
-            Join Free — Get Magic Link
+            Join the Community
           </button>
           <Link
-            href="#how-it-works"
+            href="#learn-more"
             className="rounded border border-lime px-6 py-3 font-bold text-lime transition-transform hover:scale-105 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime"
           >
-            See How It Works
+            Learn More
           </Link>
         </div>
       </div>

@@ -3,35 +3,35 @@ import Card from './Card';
 const features = [
   {
     title: 'AI Cover Art',
-    body: 'Ship on-brand covers from vibe + genre in under a minute. Full-res exports—yours to use.',
+    body: 'Generate unique cover art from vibe, genre, and prompt. Shareable.',
   },
   {
-    title: 'Meme Studio',
-    body: 'Turn moments (or an optional image) into shareable, on-brand memes that actually get reposted.',
+    title: 'AI Meme Generator',
+    body: 'Turn prompts (optional ref image) into on-brand memes—safe and shareable.',
   },
   {
-    title: 'Artist Verification',
-    body: 'Vetted profiles and invite flow help you avoid fakes and spam. Look credible when you pitch.',
+    title: 'AI Artist Verification',
+    body: 'Gemini-assisted checks; re-check speeds; info supported.',
   },
   {
-    title: 'Private & Tiered Access',
-    body: 'Verified-first spaces, content flags, and mod tools keep the feed useful—and the culture clean.',
+    title: 'Secure Auth & Tiered Access',
+    body: 'Private dashboard unlocks after approval; robust loading/empty/error states.',
   },
   {
     title: 'Curated News Rail',
-    body: 'Underground sources only. No SEO sludge. Scene-relevant drops for your region.',
+    body: 'Categories—Electronic, Techno, House, Underground, Industry, Production/Education (regions: India/Asia/Europe).',
   },
   {
     title: 'Gig Radar',
-    body: 'Find and promote events. Filter by city/region and DM promoters who are open to pitches.',
+    body: 'Discover underground gigs— Bangalore-first, global by design.',
   },
   {
-    title: 'Creator Dashboard',
-    body: 'One place for your EPK, stage plot, links, and posts. Share a single link that stays current.',
+    title: 'Admin Console',
+    body: 'Approve artists, manage flags & content ops, monitor system health.',
   },
   {
     title: 'Invite-Only Community',
-    body: 'Built for serious techno/house creators. Fewer tourists, more people who actually ship.',
+    body: 'Built for serious techno/house creators.',
   },
 ];
 
@@ -45,7 +45,7 @@ export default function FeatureGrid() {
       <p id="features-heading" className="label mb-6">
         What you get
       </p>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((feature) => (
           <Card key={feature.title} title={feature.title} body={feature.body} />
         ))}
