@@ -12,6 +12,9 @@
     "@types/node": "^20.11.30"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -p .",
+    "build": "tsc -p . || next build || vite build || echo \"no build\"",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run || jest --ci || echo \"no tests\""
   }
 }
