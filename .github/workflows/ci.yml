@@ -1,55 +1,223 @@
 name: CI
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '20'
 
 jobs:
-  build-test:
+  lint-and-typecheck:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          run_install: false
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Show versions
-        run: |
-          node -v
-          pnpm -v
-
-      - name: Install
-        run: pnpm install --no-frozen-lockfile
+      - name: Type check
+        run: npm run typecheck
 
       - name: Lint
-        run: pnpm run ci:lint
+        run: npm run lint
 
-      - name: Typecheck
-        run: pnpm run ci:typecheck
+      - name: Check formatting
+        run: npm run format:check
 
-      - name: Unit tests
-        run: pnpm run ci:test
+      - name: Check for placeholders
+        run: npm run no-placeholders
 
-      - name: Build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        run: pnpm run ci:build
+      - name: Verify logo integrity
+        run: npm run verify-logo
 
-      - name: E2E (optional)
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Security audit
+        run: npm audit --audit-level=high
+
+      - name: Check dependencies
+        uses: actions/dependency-review-action@v3
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build web app
+        run: npm run build
+        working-directory: apps/web
+
+      - name: Start web app
+        run: npm run start &
+        working-directory: apps/web
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build web app
+        run: npm run build
+        working-directory: apps/web
+
+      - name: Start web app
+        run: npm run start &
+        working-directory: apps/web
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: Run accessibility tests
+        run: node scripts/run-axe-smoke.cjs
+
+  visual-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build web app
+        run: npm run build
+        working-directory: apps/web
+
+      - name: Start web app
+        run: npm run start &
+        working-directory: apps/web
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: Run visual tests
+        run: npx playwright test apps/web/e2e/landing.visual.spec.ts
+
+      - name: Upload visual diff artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: visual-diffs
+          path: test-results/
+
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+        working-directory: apps/web
+
+      - name: Start web app
+        run: npm run start &
+        working-directory: apps/web
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: Run Lighthouse CI
         run: |
-          if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then
-            npx playwright install --with-deps
-            pnpm run e2e || pnpm exec playwright test
-          else
-            echo "No Playwright config — skipping e2e."
-          fi
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  mobile-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run mobile tests
+        run: npm run test:mobile
+        working-directory: apps/mobile

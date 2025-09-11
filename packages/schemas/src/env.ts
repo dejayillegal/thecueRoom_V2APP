@@ -28,3 +28,38 @@ export const clientEnv = typeof process !== 'undefined' ? clientEnvSchema.parse(
 // Type exports for use in components
 export type ClientEnv = z.infer<typeof clientEnvSchema>;
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
+import { z } from 'zod';
+
+// Web environment schema
+export const webEnvSchema = z.object({
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_ENVIRONMENT: z.enum(['development', 'staging', 'production']).default('development'),
+});
+
+// Mobile environment schema
+export const mobileEnvSchema = z.object({
+  EXPO_PUBLIC_SUPABASE_URL: z.string().url(),
+  EXPO_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  EXPO_PUBLIC_APP_SCHEME: z.string().default('thecueroom'),
+  EXPO_PUBLIC_ENVIRONMENT: z.enum(['development', 'staging', 'production']).default('development'),
+});
+
+// Shared validation function
+export function validateEnv<T>(schema: z.ZodSchema<T>, env: Record<string, string | undefined>): T {
+  const result = schema.safeParse(env);
+  
+  if (!result.success) {
+    console.error('❌ Invalid environment variables:');
+    console.error(result.error.format());
+    throw new Error('Invalid environment variables');
+  }
+  
+  return result.data;
+}
+
+export type WebEnv = z.infer<typeof webEnvSchema>;
+export type MobileEnv = z.infer<typeof mobileEnvSchema>;

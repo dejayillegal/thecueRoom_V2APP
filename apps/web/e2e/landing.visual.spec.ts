@@ -99,3 +99,68 @@ test.describe('Landing Page Visual Tests', () => {
     await expect(focusedButton).toBeVisible();
   });
 });
+import { test, expect } from '@playwright/test';
+
+test.describe('Landing Page Visual Regression', () => {
+  test('landing page matches exact design', async ({ page }) => {
+    // Navigate to landing page
+    await page.goto('/');
+    
+    // Wait for page to be fully loaded
+    await page.waitForLoadState('networkidle');
+    
+    // Wait for logo animation to settle
+    await page.waitForTimeout(1000);
+    
+    // Hide any dynamic content that might cause flaky tests
+    await page.addStyleTag({
+      content: `
+        * {
+          animation-duration: 0s !important;
+          animation-delay: 0s !important;
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }
+      `
+    });
+    
+    // Take full page screenshot with zero tolerance
+    await expect(page).toHaveScreenshot('landing-page.png', {
+      fullPage: true,
+      maxDiffPixels: 0,
+      threshold: 0
+    });
+  });
+
+  test('logo SVG remains unchanged', async ({ page }) => {
+    await page.goto('/');
+    
+    const logoSvg = page.locator('svg[aria-label="thecueRoom logo with anchored blink"]');
+    await expect(logoSvg).toBeVisible();
+    
+    // Verify logo has the exact expected structure
+    await expect(logoSvg).toHaveAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    await expect(logoSvg).toHaveAttribute('viewBox', '0 0 1000 1000');
+    
+    // Verify blink animation exists
+    const blinkPath = page.locator('#blinkPath');
+    await expect(blinkPath).toHaveCount(1);
+    
+    // Verify lime color (#b2ff00) is present
+    const pathElements = page.locator('svg path[fill="#b2ff00"]');
+    await expect(pathElements).toHaveCount(3);
+  });
+
+  test('auth modal opens correctly', async ({ page }) => {
+    await page.goto('/?auth=1');
+    
+    // Wait for modal to appear
+    const modal = page.locator('[data-testid="auth-modal"]').or(page.locator('div:has(h2:text("Welcome Back"))'));
+    await expect(modal).toBeVisible();
+    
+    // Take screenshot of auth modal
+    await expect(modal).toHaveScreenshot('auth-modal.png', {
+      maxDiffPixels: 100
+    });
+  });
+});

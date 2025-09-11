@@ -418,3 +418,298 @@ export default function AuthModal({ open, onClose }: { open: boolean; onClose: (
     </div>
   );
 }
+'use client';
+
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
+
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+type AuthTab = 'signin' | 'signup' | 'forgot';
+
+export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+  const [activeTab, setActiveTab] = useState<AuthTab>('signin');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
+  if (!mounted || !isOpen) return null;
+
+  const modalContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className="relative bg-black border border-gray-800 w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+        <div className="flex h-full min-h-[600px]">
+          {/* Auth Form Section */}
+          <div className="flex-1 p-8 flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-white">
+                {activeTab === 'signin' && 'Welcome Back'}
+                {activeTab === 'signup' && 'Join theCueRoom'}
+                {activeTab === 'forgot' && 'Reset Password'}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white transition-colors p-2"
+                aria-label="Close modal"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-gray-800 mb-8">
+              <button
+                onClick={() => setActiveTab('signin')}
+                className={cn(
+                  'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                  activeTab === 'signin'
+                    ? 'border-lime-300 text-lime-300'
+                    : 'border-transparent text-gray-400 hover:text-white'
+                )}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setActiveTab('signup')}
+                className={cn(
+                  'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                  activeTab === 'signup'
+                    ? 'border-lime-300 text-lime-300'
+                    : 'border-transparent text-gray-400 hover:text-white'
+                )}
+              >
+                Sign Up
+              </button>
+              <button
+                onClick={() => setActiveTab('forgot')}
+                className={cn(
+                  'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+                  activeTab === 'forgot'
+                    ? 'border-lime-300 text-lime-300'
+                    : 'border-transparent text-gray-400 hover:text-white'
+                )}
+              >
+                Forgot
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <div className="flex-1">
+              {activeTab === 'signin' && <SignInForm />}
+              {activeTab === 'signup' && <SignUpForm />}
+              {activeTab === 'forgot' && <ForgotForm />}
+            </div>
+          </div>
+
+          {/* Info Section */}
+          <div className="border-l border-gray-800 bg-gray-900/30 p-8 w-80">
+            <h3 className="font-bold text-white mb-4">Underground Community</h3>
+            <div className="space-y-3 text-sm text-gray-300">
+              <div className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-lime-300 rounded-full mt-2 flex-shrink-0"></span>
+                <span>Verified artists only. Manual approval process ensures quality.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-lime-300 rounded-full mt-2 flex-shrink-0"></span>
+                <span>Bangalore-centric techno and house community.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-lime-300 rounded-full mt-2 flex-shrink-0"></span>
+                <span>Strict moderation. No mainstream, no self-promotion.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-lime-300 rounded-full mt-2 flex-shrink-0"></span>
+                <span>Weekly playlists, gig radar, and creative tools.</span>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-6 border-t border-gray-800 text-xs text-gray-400">
+              By continuing you agree to our Terms and Privacy Policy.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return createPortal(modalContent, document.body);
+}
+
+function SignInForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  return (
+    <form className="space-y-6">
+      <div>
+        <label htmlFor="signin-email" className="block text-sm font-medium text-white mb-2">
+          Email
+        </label>
+        <input
+          id="signin-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-none focus:border-lime-300 focus:outline-none"
+          placeholder="artist@example.com"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="signin-password" className="block text-sm font-medium text-white mb-2">
+          Password
+        </label>
+        <input
+          id="signin-password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-none focus:border-lime-300 focus:outline-none"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <Button type="submit" className="w-full">
+        Sign In
+      </Button>
+    </form>
+  );
+}
+
+function SignUpForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [handle, setHandle] = useState('');
+
+  return (
+    <form className="space-y-6">
+      <div>
+        <label htmlFor="signup-handle" className="block text-sm font-medium text-white mb-2">
+          Artist Handle
+        </label>
+        <input
+          id="signup-handle"
+          type="text"
+          value={handle}
+          onChange={(e) => setHandle(e.target.value)}
+          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-none focus:border-lime-300 focus:outline-none"
+          placeholder="your_artist_name"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="signup-email" className="block text-sm font-medium text-white mb-2">
+          Email
+        </label>
+        <input
+          id="signup-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-none focus:border-lime-300 focus:outline-none"
+          placeholder="artist@example.com"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="signup-password" className="block text-sm font-medium text-white mb-2">
+          Password
+        </label>
+        <input
+          id="signup-password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-none focus:border-lime-300 focus:outline-none"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div className="bg-gray-900/50 p-4 border border-gray-800">
+        <p className="text-xs text-gray-400">
+          <strong>Note:</strong> Account approval required. Please provide valid social links and portfolio for verification.
+        </p>
+      </div>
+
+      <Button type="submit" className="w-full">
+        Request Access
+      </Button>
+    </form>
+  );
+}
+
+function ForgotForm() {
+  const [email, setEmail] = useState('');
+
+  return (
+    <form className="space-y-6">
+      <div>
+        <label htmlFor="forgot-email" className="block text-sm font-medium text-white mb-2">
+          Email
+        </label>
+        <input
+          id="forgot-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-none focus:border-lime-300 focus:outline-none"
+          placeholder="artist@example.com"
+        />
+      </div>
+
+      <div className="bg-gray-900/50 p-4 border border-gray-800">
+        <p className="text-xs text-gray-400">
+          We'll send you a secure link to reset your password.
+        </p>
+      </div>
+
+      <Button type="submit" className="w-full">
+        Send Reset Link
+      </Button>
+    </form>
+  );
+}

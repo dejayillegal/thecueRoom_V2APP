@@ -22,6 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="format-detection" content="telephone=no" />
         <meta name="theme-color" content="#0B0B0B" />
         <meta name="color-scheme" content="dark" />
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
       </head>
       <body className={`${inter.className} ${sourceCode.variable} bg-[#0B0B0B] text-white antialiased`}>
         <ErrorBoundary>
