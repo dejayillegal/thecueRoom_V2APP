@@ -1,0 +1,131 @@
+4.3 Docs (single source of truth)
+
+Create/update:
+
+docs/TESTING.md (you added—extend with a11y & perf)
+
+docs/SECURITY.md
+
+RLS policies, allowed domains, token handling, CSP, secrets layout, rotation.
+
+docs/ARCHITECTURE.md
+
+Diagrams: Web (Next static), Mobile (Expo), Supabase (DB/RLS + Functions), Queue (if added later).
+
+docs/RELEASES.md
+
+Semantic versioning; web deploys (Pages), mobile tags (mobile-v*), function versions.
+
+docs/ONBOARDING.md
+
+15-minute setup path (node, pnpm/npm, Supabase, envs), npm run verify:local.
+
+5) Mobile (Expo) specifics
+
+Navigation: stack for onboarding modal; bottom tabs for core; modal for auth. Ensure safe-area, large titles iOS, Material You on Android where sensible.
+
+Deep links: exp:// for dev; thecueroom://callback for prod; handle email verification & password reset intents.
+
+OTA updates: Enable EAS Update with channel: production; gate risky feature flags via remote config (e.g., Supabase remote_flags table).
+
+ASO basics: name ≤ 30 chars; subtitle; 5 screenshots each platform; privacy nutrition; in-app events later.
+
+6) SEO & Growth (web)
+
+Metadata: generateMetadata with canonical, OpenGraph, Twitter, manifest.
+
+Critical CSS: your landing is static—inline above-the-fold hero gradient; keep rest cached.
+
+Sitemap: static sitemap.xml in public/, robots.txt tailored for Pages base path.
+
+PWA: web manifest with icons; service worker only if you need offline (Pages + Workbox via static file).
+
+7) Privacy by Design (GDPR/CCPA)
+
+Consent: show a minimal banner when analytics enabled; store only anonymous events by default.
+
+Data rights: profile page exposes export (Edge function → CSV/JSON) and delete account (soft-delete + revoke sessions).
+
+MFA: optional TOTP. Respect reduced motion and prefers-color-scheme (yours is dark; keep contrast AA).
+
+8) Concrete file adds/edits (quick list)
+
+apps/web/components/BrandLogo.tsx → exact SVG (yours) + size locked via CSS h-6 w-auto md:h-7.
+
+apps/web/components/auth/{AuthModal,CodeModal}.tsx → modal flow.
+
+apps/web/app/(marketing)/layout.tsx → meta CSP with nonce; inject nonce to any inline scripts.
+
+apps/web/e2e/landing.visual.spec.ts → pixel snapshot gate.
+
+apps/web/e2e/auth.modal.spec.ts → open → submit → pending approval state.
+
+scripts/run-axe-smoke.cjs → a11y smoke.
+
+packages/schemas/src/env.ts and apps/web/lib/schemas.ts → zod.
+
+supabase/policies.sql → RLS (profiles, links).
+
+functions/verifyArtist/index.ts → your approval logic (already drafted previously).
+
+.github/workflows/{ci.yml,deploy-pages.yml,eas-build.yml,security.yml,supabase-functions.yml} → as above.
+
+9) Acceptance checklist (must pass before release)
+
+Visual
+
+ Landing page pixel-perfect vs snapshot (0 diff).
+
+ Logo SVG matches canonical string test.
+
+ Auth modal matches provided mock (tabs, help panel).
+
+Functional
+
+ Sign up (email+password) → submit social/profile URLs → auto-approve if heuristics pass else pending with admin notification.
+
+ Magic link + hash catcher → URL cleaned; session established.
+
+ Mobile onboarding: Profile → Genres → Links → Preferences (works offline for local state; sync on submit).
+
+Security
+
+ RLS: only owner reads/writes profile; admin flips approval.
+
+ No 3rd-party script without allow-list; CSP meta present.
+
+ Dependencies have no high/critical vulns.
+
+Performance
+
+ Lighthouse: Perf ≥ 90; FCP ≤ 1.8s; TTI ≤ 3.0s; bundle ≤ 170kB first-load.
+
+ Images optimized; no layout shift > 0.05 CLS.
+
+Accessibility
+
+ Axe: 0 violations on / and ?auth=1.
+
+ Keyboard-only flows; visible focus; aria-live for status.
+
+Ops
+
+ CI green: unit, integration, E2E, a11y, perf smoke.
+
+ Pages deploy from github-pages environment.
+
+ EAS build produces installable artifacts.
+
+ Error tracking and analytics receiving events (with consent).
+
+10) “Do this next” (short, high-impact)
+
+Lock the logo file & test (prevents future regressions).
+
+Ship the auth modal exactly like your screenshots; keep legacy /login route only to open modal & 301 to /.
+
+Install the four workflows above (CI verify, deploy, EAS, security).
+
+Add RLS + verifyArtist Edge Function and wire the client to show Pending Approval status.
+
+Add landing visual snapshot + axe smoke to E2E.

@@ -1,0 +1,167 @@
+BUILD THECUEROOM (WEB + MOBILE) PRODUCTION MONOREPO
+
+You are an expert full-stack team (architect + FE/BE + mobile + DevOps + QA). Build a zero-error, production-ready monorepo for TheCueRoom: a closed underground techno/house artist community (India/Bangalore-centric) with strict moderation, no mainstream/self-promo, weekly playlists, Gig Radar (Bangalore-only, on artist profiles), creative AI-meme tab, and an admin console. Use modern, strongly-typed, test-driven, accessible patterns. Refactor/clean any existing code; remove dead assets, fake PNG/SVG refs, and “TODOs”.
+
+Sources to respect (mirror the UX and logic where applicable)
+
+Live V1 reference (visual/IA): https://dejayillegal.github.io/thecueroom/profile
+
+V1 repo (migrate good parts, fix weak parts): https://github.com/dejayillegal/thecueroom
+
+Canonical logo: logo.svg (the exact “thecueRoom logo with anchored blink” SVG with lime fill #D1E231 and the blink keyframes; preserve geometry/paths/keyframes verbatim; filename must remain logo.svg)
+
+High-level Architecture
+
+Monorepo: pnpm + TurboRepo
+
+apps/web → Next.js 15 (app router) + TypeScript
+
+apps/mobile → Expo (React Native, latest SDK)
+
+packages/ui → shared React + RN components (Tailwind/nativewind tokens), shadcn/ui for web
+
+packages/schemas → Drizzle ORM schema + Zod validators + types
+
+packages/config → eslint, prettier, tsconfig, tailwind, env validation (zod), design tokens
+
+packages/utils → shared helpers (date, formatting, feature flags)
+
+DB+Auth: Supabase (Postgres + RLS + Policies) with Drizzle migrations
+
+API: Next.js route handlers (/api/*) + Supabase Edge Functions for cron/ingest if needed
+
+State: React Query (TanStack) + server actions on web; RN Query on mobile
+
+Styling: Tailwind (web), nativewind (mobile). Strict design tokens; dark theme default.
+
+Testing: Vitest + React Testing Library (web), Playwright (E2E web), Jest + Detox (mobile E2E)
+
+CI/CD: GitHub Actions (see below). No dependency on Replit workflows.
+
+Performance/Quality gates: ESLint, TypeCheck, LCP budget, Lighthouse CI for web; bundle analyzer; A11y checks.
+
+Product Requirements (V1 + V2)
+
+Closed Artist/DJ Community
+
+Email/OTP + (optional) TOTP 2FA via Supabase Auth.
+
+Artist verification flow (admin-approved). One account per artist (enforce uniqueness).
+
+Profile includes: bio, genres (techno/house only), links, Gig Radar (Bangalore gigs only).
+
+Moderation
+
+Strict profanity/blocklist; report/ban; RLS ensures only allowed content.
+
+No scammers/bullying, no explicit/offensive content. Server-side filters + admin queue.
+
+Feed
+
+Community posts (text + link + media), comments, reactions.
+
+Curated underground news (RSS ingest + dedupe). Zod-validated ingest job.
+
+Creative Tab
+
+AI meme/cover-art generator (stub UI + client-side pipeline with placeholders/hooks).
+
+Export/share images; save to user gallery table.
+
+Weekly Playlists
+
+Spotify integration (link out). Weekly updated techno/house playlists visible in app.
+
+Gig Radar (Bangalore-only)
+
+Gigs table with venue/date/artist; show on artist profile; filter by date/venue.
+
+Admin Console
+
+Edit any content (posts, gigs, playlists, users), approve artists, handle reports, toggle flags.
+
+Personalized Newsletter (V2)
+
+Server job prepares per-artist underground news roundup; opt-in; admin trigger; email template stubs.
+
+Data Model (Drizzle + Zod) — implement tables & relations
+
+users (id, handle unique, email, role ['artist','admin'], verified boolean, bio, links, genres[], created_at)
+
+posts (id, author_id fk, body, media_url?, created_at)
+
+comments (id, post_id fk, author_id fk, body, created_at)
+
+reactions (id, post_id fk, user_id fk, kind enum)
+
+memes (id, owner_id fk, image_url, prompt, created_at)
+
+playlists (id, title, platform:'spotify', url, week_of date)
+
+tracks (id, playlist_id fk, title, artist, url)
+
+gigs (id, artist_id fk(users), title, venue, city default 'Bangalore', date, url?)
+
+news_items (id, source, url unique, title, summary, published_at, tags[])
+
+reports (id, entity_type, entity_id, reporter_id, reason, status)
+
+RLS + policies for per-user access; admin bypass.
+
+Web (Next.js)
+
+Pages: / (landing), /feed, /creative, /gigs, /playlists, /profile/[handle], /admin
+
+Use logo.svg in header; keep blink animation; use #D1E231 (lime), dark charcoal bg; RA-style minimal grid.
+
+Accessibility: semantic landmarks; keyboard nav; next/image for media; color contrast ≥ AA.
+
+SEO: metadata, open graph, canonical; robots.
+
+Edge caching for public pages, auth-shielded for private.
+
+Mobile (Expo)
+
+Tabs: Feed, Creative, Gigs, Playlists, Profile
+
+Native sharing + media picker; optimized lists; offline cache for feed.
+
+Deep links to profiles/posts.
+
+Code Quality & DX
+
+ESLint (strict), Prettier, TypeScript strict, import/no-cycle.
+
+Absolute imports; path aliases.
+
+Env validation via Zod at runtime (process.env schema).
+
+Feature flags via NEXT_PUBLIC_ prefixes (web) and app.json for mobile.
+
+Remove all dead code/assets. Replace <img> with Next <Image>.
+
+Security & Compliance
+
+RLS first; server-side checks; rate-limits on mutations.
+
+Content sanitization (DOMPurify/rehype-sanitize) for user-generated content.
+
+Secrets: never commit. Use GitHub Secrets/Variables (see below).
+
+Migrations & Seed
+
+Drizzle migrations with safe up/down.
+
+Minimal seed: 3 artists, 5 posts, 2 playlists + tracks, 5 gigs (Bangalore), 6 news items.
+
+Tests (gates must pass in CI)
+
+Unit: schemas, utils, components (Vitest/Jest)
+
+E2E Web: Playwright smoke: visit landing → login → create post → react → view gig
+
+E2E Mobile (headless): Detox basic nav + login mock
+
+A11y: axe checks for critical screens
+
+Performance: Lighthouse CI min scores: PWA off, but Perf ≥ 90, A11y ≥ 95 on landing/feed
