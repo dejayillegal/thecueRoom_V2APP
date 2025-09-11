@@ -78,3 +78,77 @@ async function main() {
 }
 
 main();
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+const glob = require('glob');
+
+const WHITELIST = [
+  'logo.svg',
+  'EXACT_thecueRoom_logo.svg',
+  'MarketingLanding.svg',
+  'MarketingLanding.png',
+  '.replit',
+  'replit.nix',
+  'README.md',
+  'package.json',
+  'pnpm-lock.yaml',
+  'tsconfig.json',
+  '.gitignore',
+  '.env.example',
+  'next-env.d.ts'
+];
+
+function findUnusedFiles() {
+  const allFiles = glob.sync('**/*', {
+    ignore: [
+      'node_modules/**',
+      '.next/**',
+      'dist/**',
+      'out/**',
+      '.git/**',
+      'coverage/**'
+    ]
+  });
+
+  const referencedFiles = new Set();
+  
+  // Add whitelisted files
+  WHITELIST.forEach(file => referencedFiles.add(file));
+
+  // Scan for file references in code
+  allFiles.forEach(file => {
+    if (fs.statSync(file).isFile()) {
+      const content = fs.readFileSync(file, 'utf8');
+      
+      // Look for imports, requires, and asset references
+      const matches = content.match(/(?:import|require|from|src=|href=)["']([^"']+)["']/g);
+      if (matches) {
+        matches.forEach(match => {
+          const filePath = match.match(/["']([^"']+)["']/)?.[1];
+          if (filePath && !filePath.startsWith('http')) {
+            referencedFiles.add(path.basename(filePath));
+          }
+        });
+      }
+    }
+  });
+
+  const unusedFiles = allFiles.filter(file => {
+    const basename = path.basename(file);
+    return fs.statSync(file).isFile() && 
+           !referencedFiles.has(basename) && 
+           !referencedFiles.has(file);
+  });
+
+  if (unusedFiles.length > 0) {
+    console.error('Unused files found:');
+    unusedFiles.forEach(file => console.error(`  ${file}`));
+    process.exit(1);
+  } else {
+    console.log('No unused files found.');
+  }
+}
+
+findUnusedFiles();

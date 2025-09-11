@@ -1,7 +1,8 @@
+
 import { z } from 'zod';
 
 /**
- * WebAuthn credential schemas
+ * Enhanced WebAuthn credential schemas
  */
 export const webAuthnCredentialCreationOptionsSchema = z.object({
   challenge: z.string(),
@@ -54,23 +55,43 @@ export const webAuthnCredentialSchema = z.object({
 });
 
 /**
- * Stored credential schema
+ * Artist verification schemas
  */
-export const storedCredentialSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid(),
-  credentialId: z.string(),
-  publicKey: z.string(),
-  counter: z.number(),
-  transports: z.array(z.enum(['usb', 'nfc', 'ble', 'internal'])),
-  deviceName: z.string().max(100).optional(),
-  createdAt: z.date(),
-  lastUsedAt: z.date().optional(),
-  isActive: z.boolean().default(true),
+export const artistVerificationSubmissionSchema = z.object({
+  socialLinks: z.array(z.object({
+    platform: z.enum(['soundcloud', 'bandcamp', 'spotify', 'youtube', 'instagram', 'facebook']),
+    url: z.string().url(),
+    verified: z.boolean().default(false)
+  })).min(1),
+  musicLinks: z.array(z.object({
+    platform: z.enum(['soundcloud', 'bandcamp', 'spotify', 'youtube']),
+    url: z.string().url(),
+    type: z.enum(['track', 'album', 'playlist', 'mix'])
+  })).min(1),
+  biography: z.string().min(100).max(1000),
+  genres: z.array(z.enum([
+    'techno', 'house', 'minimal', 'acid', 'industrial', 
+    'ambient', 'dub_techno', 'detroit_techno', 'chicago_house',
+    'deep_house', 'tech_house', 'progressive', 'electro', 
+    'breakbeat', 'hardcore', 'gabber', 'experimental'
+  ])).min(1).max(5),
+  location: z.string().min(2).max(100).optional(),
+  yearsActive: z.number().min(0).max(50).optional(),
+  labels: z.array(z.string()).max(10).optional(),
+  achievements: z.string().max(500).optional()
+});
+
+export const artistVerificationReviewSchema = z.object({
+  status: z.enum(['verified', 'rejected', 'needs_info']),
+  notes: z.string().max(500).optional(),
+  rejectionReason: z.string().when('status', {
+    is: 'rejected',
+    then: z.string().min(10).max(500)
+  }).optional()
 });
 
 /**
- * Session schema
+ * Enhanced session and security schemas  
  */
 export const sessionSchema = z.object({
   id: z.string().uuid(),
@@ -82,28 +103,10 @@ export const sessionSchema = z.object({
   ipAddress: z.string().optional(),
   userAgent: z.string().optional(),
   isActive: z.boolean().default(true),
+  lastAccessedAt: z.date().optional(),
+  deviceFingerprint: z.string().optional()
 });
 
-/**
- * Permission schemas
- */
-export const permissionSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().max(100),
-  description: z.string().max(255).optional(),
-  resource: z.string().max(100),
-  action: z.string().max(100),
-  conditions: z.record(z.unknown()).optional(),
-});
-
-export const rolePermissionSchema = z.object({
-  roleId: z.string().uuid(),
-  permissionId: z.string().uuid(),
-});
-
-/**
- * Security event schemas
- */
 export const securityEventSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid().optional(),
@@ -119,50 +122,58 @@ export const securityEventSchema = z.object({
     'account_unlocked',
     'suspicious_activity',
     'data_export',
-    'account_deletion'
+    'account_deletion',
+    'verification_submitted',
+    'verification_approved',
+    'verification_rejected',
+    'moderation_action',
+    'admin_access'
   ]),
   severity: z.enum(['info', 'warning', 'error', 'critical']),
   details: z.record(z.unknown()).optional(),
   ipAddress: z.string().optional(),
   userAgent: z.string().optional(),
+  location: z.string().optional(),
   createdAt: z.date(),
 });
 
-/**
- * Rate limiting schemas
- */
 export const rateLimitSchema = z.object({
   id: z.string(),
   resource: z.string(),
-  identifier: z.string(), // IP, user ID, etc.
+  identifier: z.string(),
   count: z.number(),
   windowStart: z.date(),
   windowEnd: z.date(),
+  isBlocked: z.boolean().default(false)
 });
 
 /**
- * Two-factor authentication schemas
+ * Content moderation schemas
  */
-export const totpSetupSchema = z.object({
-  secret: z.string(),
-  qrCodeUrl: z.string(),
-  backupCodes: z.array(z.string()),
+export const moderationConfigSchema = z.object({
+  toxicityThreshold: z.number().min(0).max(1).default(0.7),
+  spamThreshold: z.number().min(0).max(1).default(0.8),
+  nsfwThreshold: z.number().min(0).max(1).default(0.6),
+  autoFlagEnabled: z.boolean().default(true),
+  autoHideEnabled: z.boolean().default(false),
+  requireManualReview: z.boolean().default(true)
 });
 
-export const totpVerificationSchema = z.object({
-  token: z.string().length(6).regex(/^\d{6}$/),
-  backupCode: z.string().optional(),
+export const moderationActionSchema = z.object({
+  action: z.enum(['approve', 'reject', 'flag', 'hide', 'ban_user', 'warn_user']),
+  reason: z.string().min(10).max(500),
+  duration: z.number().optional(), // in hours
+  notes: z.string().max(1000).optional()
 });
 
 // Type exports
 export type WebAuthnCredentialCreationOptions = z.infer<typeof webAuthnCredentialCreationOptionsSchema>;
 export type WebAuthnCredentialRequestOptions = z.infer<typeof webAuthnCredentialRequestOptionsSchema>;
 export type WebAuthnCredential = z.infer<typeof webAuthnCredentialSchema>;
-export type StoredCredential = z.infer<typeof storedCredentialSchema>;
+export type ArtistVerificationSubmission = z.infer<typeof artistVerificationSubmissionSchema>;
+export type ArtistVerificationReview = z.infer<typeof artistVerificationReviewSchema>;
 export type Session = z.infer<typeof sessionSchema>;
-export type Permission = z.infer<typeof permissionSchema>;
-export type RolePermission = z.infer<typeof rolePermissionSchema>;
 export type SecurityEvent = z.infer<typeof securityEventSchema>;
 export type RateLimit = z.infer<typeof rateLimitSchema>;
-export type TotpSetup = z.infer<typeof totpSetupSchema>;
-export type TotpVerification = z.infer<typeof totpVerificationSchema>;
+export type ModerationConfig = z.infer<typeof moderationConfigSchema>;
+export type ModerationAction = z.infer<typeof moderationActionSchema>;

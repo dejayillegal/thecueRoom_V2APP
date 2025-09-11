@@ -1,8 +1,11 @@
-name: CI
+
+name: CI/CD
 
 on:
-  push: { branches: [ main, develop ] }
-  pull_request: { branches: [ main, develop ] }
+  push: 
+    branches: [ main, develop ]
+  pull_request: 
+    branches: [ main, develop ]
   workflow_dispatch:
 
 concurrency:
@@ -24,33 +27,37 @@ jobs:
       is_export: ${{ steps.detect.outputs.is_export }}
     steps:
       - uses: actions/checkout@v4
-      - name: Lockfile discipline (pnpm only)
+      
+      - name: Enforce pnpm lockfile only
         run: |
           if [ -f package-lock.json ] || [ -f yarn.lock ]; then
             echo "Remove package-lock.json / yarn.lock. Use pnpm-lock.yaml only."
             exit 1
           fi
           if [ ! -f pnpm-lock.yaml ]; then echo "Generating pnpm-lock.yaml"; fi
+          
       - uses: actions/setup-node@v4
-        with: { node-version: 20.x, cache: 'pnpm' }
+        with: 
+          node-version: 20.x
+          cache: 'pnpm'
+          
       - uses: pnpm/action-setup@v4
-        with: { version: 9, run_install: false }
-      - name: Install (create lockfile if missing)
+        with: 
+          version: 9
+          run_install: false
+          
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile=false
+        
       - name: Detect projects
         id: detect
         run: |
           has_web="false"; [ -d "apps/web" ] && has_web="true"
           has_pw="false"; ls -1 **/playwright.config.* >/dev/null 2>&1 && has_pw="true"
-          is_export="false"; grep -R "output:\s*'export'" apps/web/next.config.* >/dev/null 2>&1 && is_export="true"
+          is_export="false"; grep -R "output:\\s*'export'" apps/web/next.config.* >/dev/null 2>&1 && is_export="true"
           echo "has_web=$has_web" >> $GITHUB_OUTPUT
           echo "has_playwright=$has_pw" >> $GITHUB_OUTPUT
           echo "is_export=$is_export" >> $GITHUB_OUTPUT
-      - name: Cache turbo (optional)
-        uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
   verify:
     runs-on: ubuntu-latest
@@ -58,18 +65,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20.x, cache: 'pnpm' }
+        with: 
+          node-version: 20.x
+          cache: 'pnpm'
       - uses: pnpm/action-setup@v4
-        with: { version: 9, run_install: false }
+        with: 
+          version: 9
+          run_install: false
       - run: pnpm install --frozen-lockfile
+      
       - name: Typecheck
         run: pnpm typecheck
+        
       - name: Lint (no warnings)
         run: pnpm lint
+        
       - name: Unit tests
         run: pnpm test
+        
       - name: Dependency hygiene (strict)
         run: pnpm depcheck
+        
       - name: Unused files (strict)
         run: pnpm unused
 
@@ -80,18 +96,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20.x, cache: 'pnpm' }
+        with: 
+          node-version: 20.x
+          cache: 'pnpm'
       - uses: pnpm/action-setup@v4
-        with: { version: 9, run_install: false }
+        with: 
+          version: 9
+          run_install: false
       - run: pnpm install --frozen-lockfile
       - run: npx playwright install --with-deps
-      - name: Build & start web (if present)
+      
+      - name: Build & start web
         run: |
           if [ -d "apps/web" ]; then
             pnpm --filter ./apps/web run build
             pnpm --filter ./apps/web run start &>/dev/null &
             sleep 3
           fi
+          
       - name: Run Playwright
         run: npx playwright test --reporter=line
 
@@ -102,14 +124,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20.x, cache: 'pnpm' }
+        with: 
+          node-version: 20.x
+          cache: 'pnpm'
       - uses: pnpm/action-setup@v4
-        with: { version: 9, run_install: false }
+        with: 
+          version: 9
+          run_install: false
       - run: pnpm install --frozen-lockfile
+      
       - name: Build web
         working-directory: apps/web
         run: pnpm run build
-      - name: Upload bundle artifacts
+        
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: web-build
@@ -120,54 +148,55 @@ jobs:
           if-no-files-found: warn
 
   deploy_web_export:
-    name: Deploy Web (GitHub Pages, export)
-    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export == 'true' && github.ref == 'refs/heads/main'
+    name: Deploy Web (GitHub Pages)
+    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export == 'true'
     runs-on: ubuntu-latest
     needs: [build_web]
-    permissions:
+    permissions: 
       contents: write
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20.x, cache: 'pnpm' }
+        with: 
+          node-version: 20.x
+          cache: 'pnpm'
       - uses: pnpm/action-setup@v4
-        with: { version: 9, run_install: false }
+        with: 
+          version: 9
+          run_install: false
       - run: pnpm install --frozen-lockfile
-      - name: Export static build
+      
+      - name: Export static
         working-directory: apps/web
-        env:
-          STATIC_EXPORT: '1'
-        run: pnpm run build:static
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        run: pnpm run build && pnpm exec next export
+        
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./apps/web/out
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/web/out
+          force_orphan: true
 
   deploy_web_vercel:
-    name: Deploy Web (Vercel, dynamic)
-    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export != 'true' && github.ref == 'refs/heads/main'
+    name: Deploy Web (Vercel)
+    if: needs.setup.outputs.has_web == 'true' && needs.setup.outputs.is_export != 'true'
     runs-on: ubuntu-latest
     needs: [build_web]
-    environment:
-      name: production
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./apps/web
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: 20.x
+          
+      - name: Vercel Deploy
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

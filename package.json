@@ -1,51 +1,40 @@
+
 {
-  "name": "thecueroom-monorepo",
+  "name": "thecueroom",
+  "version": "2.0.0",
   "private": true,
-  "type": "module",
   "packageManager": "pnpm@9",
-  "dependencies": {
-    "axe-playwright": "^2.1.0",
-    "playwright": "^1.55.0",
-    "zod": "3.23.8"
-  },
-  "devDependencies": {
-    "tsx": "4.7.1",
-    "depcheck": "^1.4.7",
-    "type-coverage": "^2.29.1",
-    "eslint": "^8.57.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-react": "^7.33.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
-    "eslint-import-resolver-typescript": "^3.6.0",
-    "prettier": "^3.2.5",
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.0.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
-    "typescript": "^5.3.0"
-  },
   "scripts": {
     "bootstrap": "pnpm install && pnpm -r run build:types || true",
-    "typecheck": "pnpm --filter \"./packages/*\" --filter \"./apps/web\" exec tsc -b",
+    "typecheck": "pnpm -r exec tsc -b",
     "lint": "pnpm -r exec eslint .",
     "format": "pnpm -r exec prettier -w .",
-    "test": "pnpm test:web && pnpm test:mobile",
-    "test:web": "pnpm --filter \"./apps/web\" run test",
-    "test:mobile": "pnpm --filter \"./apps/mobile\" run test",
+    "test": "pnpm -r exec vitest run",
     "analyze": "pnpm -r --filter \"./apps/*\" run analyze",
     "depcheck": "pnpm -r exec depcheck --ignores=@types/*,eslint*,prettier*",
     "unused": "node scripts/find-unused.js",
     "ci": "pnpm bootstrap && pnpm typecheck && pnpm lint && pnpm test",
-    "build:web": "pnpm --filter ./apps/web run build",
-    "build": "pnpm run build:web",
-    "audit": "node scripts/repo-audit.mjs",
-    "audit:fix": "node scripts/repo-audit.mjs --fix",
-    "scan:placeholders": "node scripts/no-placeholders.mjs",
-    "verify:local": "bash ./scripts/local-verify.sh",
-    "assemble:assets": "node --import tsx scripts/assemble-assets.ts"
-  }
+    "dev": "pnpm --filter ./apps/web run dev",
+    "build": "pnpm -r run build",
+    "start": "pnpm --filter ./apps/web run start"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.2",
+    "depcheck": "^1.4.7"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "functions"
+  ]
 }
