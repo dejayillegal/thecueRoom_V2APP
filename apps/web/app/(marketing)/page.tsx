@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Logo from '@/components/Logo';
+import BrandLogo from '@/components/BrandLogo';
 import UserMenu from '@/components/auth/UserMenu';
 import LoginDialog from '@/components/auth/LoginDialog';
 import Hero from '@/components/landing/Hero';
@@ -53,7 +53,10 @@ function Content() {
     <>
       <header className="py-6">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6">
-          <Logo className="h-6 w-6" />
+          <Link href="/" className="flex items-center gap-3">
+            <BrandLogo className="w-7 h-7" />
+            <span className="text-white text-lg font-medium">thecueRoom</span>
+          </Link>
           {session ? (
             <UserMenu />
           ) : (
@@ -62,7 +65,7 @@ function Content() {
                 onClick={() => setOpen(true)}
                 className="rounded bg-lime px-4 py-2 font-bold text-black transition-transform hover:scale-105 hover:brightness-110"
               >
-                Join Free
+                Login / Sign Up
               </button>
               <div className="absolute right-0 mt-2 hidden w-56 rounded bg-surface p-2 text-xs text-muted shadow group-hover:block">
                 <p>Email magic link — no password</p>

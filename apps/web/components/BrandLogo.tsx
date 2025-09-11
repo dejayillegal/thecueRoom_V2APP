@@ -30,9 +30,11 @@ export default function BrandLogo({
   title = "thecueRoom",
 }: { className?: string; title?: string }) {
   return (
-    <div className={`${className} rounded-full bg-[#D1E231] flex items-center justify-center`} aria-label={title}>
-      <span className="text-black font-bold text-sm">tc</span>
-    </div>
+    <div 
+      className={className}
+      dangerouslySetInnerHTML={{ __html: RAW_LOGO_SVG }}
+      aria-label={title}
+    />
   );
 }
 
